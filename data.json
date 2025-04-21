@@ -1,0 +1,521 @@
+{
+  "template": {
+    "type": "JSON",
+    "content": [
+      {
+        "id": "4060255",
+        "Flight": "F90114",
+        "Time": "15:12",
+        "HotelName": "Royalton CHIC Suites Cancun"
+      },
+      {
+        "id": "3650407",
+        "Flight": "WS2065",
+        "Time": "18:40",
+        "HotelName": "Royalton CHIC Suites Cancun"
+      },
+      {
+        "id": "9890SE605025",
+        "Flight": "TBA000",
+        "Time": "15:00",
+        "HotelName": "Contact your Royalton Experience Rep"
+      },
+      {
+        "id": "141670961",
+        "Flight": "WG5164",
+        "Time": "14:35",
+        "HotelName": "Royalton CHIC Suites Cancun"
+      },
+      {
+        "id": "141670961",
+        "Flight": "WG552",
+        "Time": "14:55",
+        "HotelName": "Royalton CHIC Suites Cancun"
+      },
+      {
+        "id": "9890SE581006",
+        "Flight": "TBA000",
+        "Time": "00:00",
+        "HotelName": "Contact your Royalton Experience Rep"
+      },
+      {
+        "id": "3630246",
+        "Flight": "AA1192",
+        "Time": "16:25",
+        "HotelName": "Royalton CHIC Suites Cancun"
+      },
+      {
+        "id": "27QV8F",
+        "Flight": "F9206",
+        "Time": "11:10",
+        "HotelName": "Royalton CHIC Suites Cancun"
+      },
+      {
+        "id": "4131488",
+        "Flight": "TBA000",
+        "Time": "15:00",
+        "HotelName": "Contact your Royalton Experience Rep"
+      },
+      {
+        "id": "3655409",
+        "Flight": "AA1192",
+        "Time": "16:25",
+        "HotelName": "Royalton CHIC Suites Cancun"
+      },
+      {
+        "id": "4086903",
+        "Flight": "TBA000",
+        "Time": "15:00",
+        "HotelName": "Contact your Royalton Experience Rep"
+      },
+      {
+        "id": "140413883",
+        "Flight": "WG552",
+        "Time": "14:55",
+        "HotelName": "Royalton CHIC Suites Cancun"
+      },
+      {
+        "id": "4011722",
+        "Flight": "DL2013",
+        "Time": "10:00",
+        "HotelName": "Royalton CHIC Suites Cancun"
+      },
+      {
+        "id": "9890SE605079",
+        "Flight": "TBA000",
+        "Time": "15:00",
+        "HotelName": "Contact your Royalton Experience Rep"
+      },
+      {
+        "id": "142906983",
+        "Flight": "WG5182",
+        "Time": "14:50",
+        "HotelName": "Royalton CHIC Suites Cancun"
+      },
+      {
+        "id": "9890SE605003",
+        "Flight": "TBA000",
+        "Time": "15:00",
+        "HotelName": "Contact your Royalton Experience Rep"
+      },
+      {
+        "id": "9890SE609670",
+        "Flight": "AM0547",
+        "Time": "18:25",
+        "HotelName": "Royalton CHIC Suites Cancun"
+      },
+      {
+        "id": "3655409",
+        "Flight": "TBA000",
+        "Time": "15:00",
+        "HotelName": "Contact your Royalton Experience Rep"
+      },
+      {
+        "id": "9890SE605821",
+        "Flight": "TBA000",
+        "Time": "15:00",
+        "HotelName": "Contact your Royalton Experience Rep"
+      },
+      {
+        "id": "9890SE568342",
+        "Flight": "TBA000",
+        "Time": "15:00",
+        "HotelName": "Contact your Royalton Experience Rep"
+      },
+      {
+        "id": "4075420",
+        "Flight": "AA2175",
+        "Time": "12:39",
+        "HotelName": "Royalton CHIC Suites Cancun"
+      },
+      {
+        "id": "4075420",
+        "Flight": "WN1025",
+        "Time": "13:10",
+        "HotelName": "Royalton CHIC Suites Cancun"
+      },
+      {
+        "id": "9890SE590632",
+        "Flight": "TBA000",
+        "Time": "15:00",
+        "HotelName": "Contact your Royalton Experience Rep"
+      },
+      {
+        "id": "3641316",
+        "Flight": "TBA000",
+        "Time": "15:00",
+        "HotelName": "Contact your Royalton Experience Rep"
+      },
+      {
+        "id": "9890SF626983",
+        "Flight": "TBA000",
+        "Time": "15:00",
+        "HotelName": "Contact your Royalton Experience Rep"
+      },
+      {
+        "id": "3967237",
+        "Flight": "AA1192",
+        "Time": "16:25",
+        "HotelName": "Royalton CHIC Suites Cancun"
+      },
+      {
+        "id": "9890SF637442",
+        "Flight": "AA1102",
+        "Time": "12:45",
+        "HotelName": "Royalton CHIC Suites Cancun"
+      },
+      {
+        "id": "9890SF637442",
+        "Flight": "UA1133",
+        "Time": "16:12",
+        "HotelName": "Royalton CHIC Suites Cancun"
+      },
+      {
+        "id": "9890SF635011",
+        "Flight": "TBA000",
+        "Time": "00:00",
+        "HotelName": "Contact your Royalton Experience Rep"
+      },
+      {
+        "id": "3650279",
+        "Flight": "WS2065",
+        "Time": "18:40",
+        "HotelName": "Royalton CHIC Suites Cancun"
+      },
+      {
+        "id": "3650137",
+        "Flight": "WS2023",
+        "Time": "17:25",
+        "HotelName": "Royalton CHIC Suites Cancun"
+      },
+      {
+        "id": "3650056",
+        "Flight": "WS2023",
+        "Time": "17:25",
+        "HotelName": "Royalton CHIC Suites Cancun"
+      },
+      {
+        "id": "9890SE592919",
+        "Flight": "AA1469",
+        "Time": "10:55",
+        "HotelName": "Royalton CHIC Suites Cancun"
+      },
+      {
+        "id": "4030758",
+        "Flight": "AA1132",
+        "Time": "15:05",
+        "HotelName": "Royalton CHIC Suites Cancun"
+      },
+      {
+        "id": "9890SE592648",
+        "Flight": "WN1996",
+        "Time": "14:25",
+        "HotelName": "Royalton CHIC Suites Cancun"
+      },
+      {
+        "id": "141671103",
+        "Flight": "WG552",
+        "Time": "14:55",
+        "HotelName": "Royalton CHIC Suites Cancun"
+      },
+      {
+        "id": "4046823",
+        "Flight": "AA1192",
+        "Time": "16:25",
+        "HotelName": "Royalton CHIC Suites Cancun"
+      },
+      {
+        "id": "4043844",
+        "Flight": "AA2219",
+        "Time": "14:24",
+        "HotelName": "Royalton CHIC Suites Cancun"
+      },
+      {
+        "id": "9890SE595529",
+        "Flight": "TBA000",
+        "Time": "00:00",
+        "HotelName": "Contact your Royalton Experience Rep"
+      },
+      {
+        "id": "142962972",
+        "Flight": "WG5182",
+        "Time": "14:50",
+        "HotelName": "Royalton CHIC Suites Cancun"
+      },
+      {
+        "id": "3646993",
+        "Flight": "AA1192",
+        "Time": "16:25",
+        "HotelName": "Royalton CHIC Suites Cancun"
+      },
+      {
+        "id": "9890SF630457",
+        "Flight": "UA1056",
+        "Time": "13:45",
+        "HotelName": "Royalton CHIC Suites Cancun"
+      },
+      {
+        "id": "3651025",
+        "Flight": "WS2065",
+        "Time": "18:40",
+        "HotelName": "Royalton CHIC Suites Cancun"
+      },
+      {
+        "id": "3650430",
+        "Flight": "WS2023",
+        "Time": "17:25",
+        "HotelName": "Royalton CHIC Suites Cancun"
+      },
+      {
+        "id": "9890SE585162",
+        "Flight": "WN750",
+        "Time": "13:50",
+        "HotelName": "Royalton CHIC Suites Cancun"
+      },
+      {
+        "id": "142990053",
+        "Flight": "WG5114",
+        "Time": "10:25",
+        "HotelName": "Royalton CHIC Suites Cancun"
+      },
+      {
+        "id": "3630246",
+        "Flight": "TBA000",
+        "Time": "15:00",
+        "HotelName": "Contact your Royalton Experience Rep"
+      },
+      {
+        "id": "9890SF631803",
+        "Flight": "TBA000",
+        "Time": "00:00",
+        "HotelName": "Contact your Royalton Experience Rep"
+      },
+      {
+        "id": "9890SE550864",
+        "Flight": "WN217",
+        "Time": "14:10",
+        "HotelName": "Royalton CHIC Suites Cancun"
+      },
+      {
+        "id": "4083208",
+        "Flight": "TBA000",
+        "Time": "15:00",
+        "HotelName": "Contact your Royalton Experience Rep"
+      },
+      {
+        "id": "3641316",
+        "Flight": "AA1192",
+        "Time": "16:25",
+        "HotelName": "Royalton CHIC Suites Cancun"
+      },
+      {
+        "id": "KXY2P5",
+        "Flight": "F9206",
+        "Time": "09:55",
+        "HotelName": "Royalton CHIC Suites Cancun"
+      },
+      {
+        "id": "9890SE595612",
+        "Flight": "F9206",
+        "Time": "11:15",
+        "HotelName": "Royalton CHIC Suites Cancun"
+      },
+      {
+        "id": "9890SE581007",
+        "Flight": "TBA000",
+        "Time": "00:00",
+        "HotelName": "Contact your Royalton Experience Rep"
+      },
+      {
+        "id": "9890SE605086",
+        "Flight": "TBA000",
+        "Time": "15:00",
+        "HotelName": "Contact your Royalton Experience Rep"
+      },
+      {
+        "id": "3646993",
+        "Flight": "TBA000",
+        "Time": "15:00",
+        "HotelName": "Contact your Royalton Experience Rep"
+      },
+      {
+        "id": "9890SE605038",
+        "Flight": "TBA000",
+        "Time": "15:00",
+        "HotelName": "Contact your Royalton Experience Rep"
+      },
+      {
+        "id": "9890SE576993",
+        "Flight": "TBA000",
+        "Time": "00:00",
+        "HotelName": "Contact your Royalton Experience Rep"
+      },
+      {
+        "id": "9890SF629378",
+        "Flight": "TBA000",
+        "Time": "15:00",
+        "HotelName": "Contact your Royalton Experience Rep"
+      },
+      {
+        "id": "3650582",
+        "Flight": "WS2065",
+        "Time": "18:40",
+        "HotelName": "Royalton CHIC Suites Cancun"
+      },
+      {
+        "id": "9890SE549252",
+        "Flight": "WN180",
+        "Time": "15:25",
+        "HotelName": "Royalton CHIC Suites Cancun"
+      },
+      {
+        "id": "3650284",
+        "Flight": "WS2065",
+        "Time": "18:40",
+        "HotelName": "Royalton CHIC Suites Cancun"
+      },
+      {
+        "id": "3646993",
+        "Flight": "TBA000",
+        "Time": "15:00",
+        "HotelName": "Contact your Royalton Experience Rep"
+      },
+      {
+        "id": "4083208",
+        "Flight": "TBA000",
+        "Time": "15:00",
+        "HotelName": "Contact your Royalton Experience Rep"
+      },
+      {
+        "id": "3650904",
+        "Flight": "WS2065",
+        "Time": "18:40",
+        "HotelName": "Royalton CHIC Suites Cancun"
+      },
+      {
+        "id": "9890SF639621",
+        "Flight": "NK528",
+        "Time": "12:15",
+        "HotelName": "Royalton CHIC Suites Cancun"
+      },
+      {
+        "id": "9890SF626524",
+        "Flight": "DL609",
+        "Time": "08:15",
+        "HotelName": "Royalton CHIC Suites Cancun"
+      },
+      {
+        "id": "3621855",
+        "Flight": "WS2065",
+        "Time": "18:40",
+        "HotelName": "Royalton CHIC Suites Cancun"
+      },
+      {
+        "id": "140523293",
+        "Flight": "WG552",
+        "Time": "14:55",
+        "HotelName": "Royalton CHIC Suites Cancun"
+      },
+      {
+        "id": "4060255",
+        "Flight": "TBA000",
+        "Time": "15:00",
+        "HotelName": "Contact your Royalton Experience Rep"
+      },
+      {
+        "id": "9890SE549265",
+        "Flight": "TBA000",
+        "Time": "15:00",
+        "HotelName": "Contact your Royalton Experience Rep"
+      },
+      {
+        "id": "3621861",
+        "Flight": "WS2065",
+        "Time": "18:40",
+        "HotelName": "Royalton CHIC Suites Cancun"
+      },
+      {
+        "id": "142805833",
+        "Flight": "WG5114",
+        "Time": "10:25",
+        "HotelName": "Royalton CHIC Suites Cancun"
+      },
+      {
+        "id": "9890SE612195",
+        "Flight": "TBA000",
+        "Time": "00:00",
+        "HotelName": "Contact your Royalton Experience Rep"
+      },
+      {
+        "id": "4122427",
+        "Flight": "B61452",
+        "Time": "17:25",
+        "HotelName": "Royalton CHIC Suites Cancun"
+      },
+      {
+        "id": "9890SE609669",
+        "Flight": "F82811",
+        "Time": "09:00",
+        "HotelName": "Royalton CHIC Suites Cancun"
+      },
+      {
+        "id": "9890SE581005",
+        "Flight": "TBA000",
+        "Time": "00:00",
+        "HotelName": "Contact your Royalton Experience Rep"
+      },
+      {
+        "id": "9890SE507399",
+        "Flight": "TBA000",
+        "Time": "15:00",
+        "HotelName": "Contact your Royalton Experience Rep"
+      },
+      {
+        "id": "142773412",
+        "Flight": "WG5114",
+        "Time": "10:25",
+        "HotelName": "Royalton CHIC Suites Cancun"
+      },
+      {
+        "id": "9890SF634546",
+        "Flight": "WN1025",
+        "Time": "13:10",
+        "HotelName": "Royalton CHIC Suites Cancun"
+      },
+      {
+        "id": "9890SE605707",
+        "Flight": "F82811",
+        "Time": "09:00",
+        "HotelName": "Royalton CHIC Suites Cancun"
+      },
+      {
+        "id": "9890SE611820",
+        "Flight": "TBA000",
+        "Time": "00:00",
+        "HotelName": "Contact your Royalton Experience Rep"
+      },
+      {
+        "id": "YSFYP1",
+        "Flight": "WN387",
+        "Time": "14:15",
+        "HotelName": "Royalton CHIC Suites Cancun"
+      },
+      {
+        "id": "9890SE581004",
+        "Flight": "TBA000",
+        "Time": "00:00",
+        "HotelName": "Contact your Royalton Experience Rep"
+      },
+      {
+        "id": "9890SE508489",
+        "Flight": "TBA000",
+        "Time": "15:00",
+        "HotelName": "Contact your Royalton Experience Rep"
+      }
+    ],
+    "source": {
+      "data_source": "Google Sheets (Private)",
+      "update_frequency": "Automated"
+    }
+  }
+}
