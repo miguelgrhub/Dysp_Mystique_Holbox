@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Transfers</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Fuentes personalizadas -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- CONTENEDOR HOME: Tabla con todos los registros -->
+  <div id="home-container" class="home-container">
+    <div class="top-buttons">
+      <!-- Botón grande: 920px de ancho x 120px de alto -->
+      <button id="search-transfer-btn" class="btn-secondary big-home-button">
+        <span class="icon">🔎</span> Search my booking number
+      </button>
+      <button id="adventure-btn" class="btn-primary hide">
+        <span class="icon">✈️</span> Find your next adventure
+      </button>
+    </div>
+
+    <!-- Título en Home -->
+    <h2 id="main-title" class="main-title">Today’s pick-up airport transfers</h2>
+
+    <!-- Aquí se inyecta la tabla y la paginación (auto) vía JavaScript -->
+    <div id="table-container" class="table-container"></div>
+
+    <footer>
+      <img class="logo_nexus_bdr" src="https://miguelgrhub.github.io/Dyspl/Logo_Dysp.png" alt="Logo Nexus">
+    </footer>
+  </div>
+
+  <!-- CONTENEDOR SEARCH: Búsqueda por ID -->
+  <div id="search-container" class="search-container">
+    <button id="back-home-btn" class="btn-back">← Back</button>
+    <h2>Find my transfer</h2>
+
+    <div class="search-box">
+      <input
+        type="text"
+        id="search-input"
+        placeholder="Enter your booking number"
+        aria-label="Search by booking number"
+      />
+      <!-- Botón de búsqueda tamaño normal -->
+      <button id="search-button" class="btn-search">
+        <span class="icon">🔍</span>
+      </button>
+    </div>
+
+    <!-- Leyenda debajo del botón (visible al inicio) -->
+    <p id="search-legend" class="search-legend">
+      If you have any questions about your pickup transfer time, please reach out to your Royalton Excursion Rep at the hospitality desk. You can also contact us easily via chat on the NexusTours App or by calling +52 998 251 6559
+We're here to assist you!
+    </p>
+
+    <div id="search-result" class="table-container result"></div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
