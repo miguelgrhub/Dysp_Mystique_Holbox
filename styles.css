@@ -59,9 +59,7 @@ body {
   align-items: center;
   margin: 0 auto;
 }
-.big-home-button .icon {
-  font-size: 1.6rem;
-}
+.big-home-button .icon { font-size: 1.6rem; }
 .btn-primary, .btn-secondary {
   border: none;
   cursor: pointer;
@@ -135,10 +133,7 @@ footer {
   cursor: pointer;
   font-size: 0.9rem;
 }
-.search-container h2 {
-  margin-bottom: 20px;
-  color: #F17121;
-}
+.search-container h2 { margin-bottom: 20px; color: #F17121; }
 .search-box {
   display: inline-flex;
   gap: 10px;
