@@ -1,3 +1,4 @@
+// script.js
 // ==================== Variables globales ====================
 let todaysRecords = [];        // Registros de today (data.json)
 let tomorrowsRecords = [];     // Registros de tomorrow (data_2.json)
@@ -10,17 +11,18 @@ let autoPageInterval = null;   // Intervalo para auto-cambiar página cada 10s
 let inactivityTimer = null;    // Temporizador de inactividad en la pantalla de búsqueda
 
 // Referencias a elementos del DOM
-const homeContainer = document.getElementById('home-container');
-const searchContainer = document.getElementById('search-container');
-const tableContainer = document.getElementById('table-container');
+const emptyContainer    = document.getElementById('empty-container');
+const homeContainer     = document.getElementById('home-container');
+const searchContainer   = document.getElementById('search-container');
+const tableContainer    = document.getElementById('table-container');
 const searchTransferBtn = document.getElementById('search-transfer-btn');
-const adventureBtn = document.getElementById('adventure-btn');
-const backHomeBtn = document.getElementById('back-home-btn');
-const searchInput = document.getElementById('search-input');
-const searchButton = document.getElementById('search-button');
-const searchResult = document.getElementById('search-result');
-const searchLegend = document.getElementById('search-legend');
-const mainTitle = document.getElementById('main-title');
+const adventureBtn      = document.getElementById('adventure-btn');
+const backHomeBtn       = document.getElementById('back-home-btn');
+const searchInput       = document.getElementById('search-input');
+const searchButton      = document.getElementById('search-button');
+const searchResult      = document.getElementById('search-result');
+const searchLegend      = document.getElementById('search-legend');
+const mainTitle         = document.getElementById('main-title');
 
 // ==================== Cargar ambos JSON ====================
 window.addEventListener('DOMContentLoaded', async () => {
@@ -30,18 +32,28 @@ window.addEventListener('DOMContentLoaded', async () => {
       fetch('data.json'),
       fetch('data_2.json')
     ]);
-    const todayData = await todayResp.json();
+    const todayData    = await todayResp.json();
     const tomorrowData = await tomorrowResp.json();
 
-    todaysRecords = todayData.template.content || [];
+    todaysRecords    = todayData.template.content || [];
     tomorrowsRecords = tomorrowData.template.content || [];
-    
-    // Empezamos mostrando los registros de hoy
+
+    // — Si ambos están vacíos, mostramos el mensaje “Nothing scheduled…” —
+    if (todaysRecords.length === 0 && tomorrowsRecords.length === 0) {
+      homeContainer.style.display   = 'none';
+      searchContainer.style.display = 'none';
+      // tableContainer está dentro de homeContainer
+      emptyContainer.style.display  = 'block';
+      return;
+    }
+
+    // — Si NO está vacío, seguimos con la lógica actual —
     currentDataset = "today";
     currentRecords = todaysRecords;
-    totalPages = Math.ceil(currentRecords.length / itemsPerPage);
+    totalPages     = Math.ceil(currentRecords.length / itemsPerPage);
     updateTitle();
     renderTable();
+
   } catch (error) {
     console.error('Error al cargar los datos:', error);
     tableContainer.innerHTML = `<p style="color:red;text-align:center;">Error loading data.</p>`;
@@ -50,31 +62,25 @@ window.addEventListener('DOMContentLoaded', async () => {
 
 // ==================== Actualizar título según dataset ====================
 function updateTitle() {
-  if (currentDataset === "today") {
-    mainTitle.innerText = "Today’s pick-up airport transfers";
-  } else {
-    mainTitle.innerText = "Tomorrow’s pick-up airport transfers";
-  }
+  mainTitle.innerText = (currentDataset === "today")
+    ? "Today’s pick-up airport transfers"
+    : "Tomorrow’s pick-up airport transfers";
 }
 
 // ==================== Renderizar tabla con paginación auto ====================
 function renderTable() {
-  // Limpiar cualquier intervalo previo
   if (autoPageInterval) {
     clearInterval(autoPageInterval);
     autoPageInterval = null;
   }
   
-  // Asegurarse de que currentRecords esté actualizado según el dataset actual
   currentRecords = (currentDataset === "today") ? todaysRecords : tomorrowsRecords;
-  totalPages = Math.ceil(currentRecords.length / itemsPerPage);
+  totalPages     = Math.ceil(currentRecords.length / itemsPerPage);
   
-  // Calcular índices de la página actual
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
+  const endIndex   = startIndex + itemsPerPage;
   const pageRecords = currentRecords.slice(startIndex, endIndex);
   
-  // Construir tabla HTML
   let tableHTML = `
     <table>
       <thead>
@@ -87,7 +93,6 @@ function renderTable() {
       </thead>
       <tbody>
   `;
-  
   pageRecords.forEach(item => {
     tableHTML += `
       <tr>
@@ -98,24 +103,15 @@ function renderTable() {
       </tr>
     `;
   });
+  tableHTML += `</tbody></table>`;
   
-  tableHTML += `
-      </tbody>
-    </table>
-  `;
-  
-  // Información de la página actual
   let pageInfoHTML = '';
   if (totalPages > 1) {
     pageInfoHTML = `<div class="auto-page-info">Page ${currentPage} of ${totalPages}</div>`;
   }
   
   tableContainer.innerHTML = tableHTML + pageInfoHTML;
-  
-  // Si hay más de una página, iniciar auto-paginación
-  if (totalPages > 1) {
-    startAutoPagination();
-  }
+  if (totalPages > 1) startAutoPagination();
 }
 
 // ==================== Auto-paginación cada 10 segundos ====================
@@ -123,7 +119,6 @@ function startAutoPagination() {
   autoPageInterval = setInterval(() => {
     currentPage++;
     if (currentPage > totalPages) {
-      // Cambiar al otro dataset y reiniciar la página
       currentDataset = (currentDataset === "today") ? "tomorrow" : "today";
       updateTitle();
       currentPage = 1;
@@ -133,104 +128,59 @@ function startAutoPagination() {
 }
 
 // ==================== Navegar: Home → Search ====================
-searchTransferBtn.addEventListener('click', () => {
-  goToSearch();
-});
-
-// (Opcional) Botón “Find your next adventure”
+searchTransferBtn.addEventListener('click', goToSearch);
 adventureBtn.addEventListener('click', () => {
   alert('You clicked "Find your next adventure". Implement your logic here!');
 });
 
-// ==================== Navegar: Search → Home (botón Back) ====================
+// ==================== Volver a Home ====================
 backHomeBtn.addEventListener('click', () => {
-  // Restaurar estilos por defecto para el caso negativo
-  //searchResult.style.background = 'transparent';
-  //searchResult.style.border = 'none';
-  //searchResult.style.boxShadow = 'none';
-    searchResult.style.opacity = '0';
+  searchResult.style.opacity = '0';
   goToHome();
 });
 
-// ==================== Ir a la pantalla de Búsqueda ====================
 function goToSearch() {
-  homeContainer.style.display = 'none';
+  homeContainer.style.display   = 'none';
   searchContainer.style.display = 'block';
-  searchResult.innerHTML = '';
-  searchInput.value = '';
-  
-  // Mostrar la leyenda al entrar
-  searchLegend.style.display = 'block';
-  
-  // Detener la auto-paginación y temporizadores
-  if (autoPageInterval) {
-    clearInterval(autoPageInterval);
-    autoPageInterval = null;
-  }
-  if (inactivityTimer) {
-    clearTimeout(inactivityTimer);
-    inactivityTimer = null;
-  }
+  searchResult.innerHTML        = '';
+  searchInput.value             = '';
+  searchLegend.style.display    = 'block';
+  if (autoPageInterval) clearInterval(autoPageInterval);
+  if (inactivityTimer) clearTimeout(inactivityTimer);
 }
 
-// ==================== Volver a la pantalla Home ====================
 function goToHome() {
   searchContainer.style.display = 'none';
-  homeContainer.style.display = 'block';
-  searchResult.innerHTML = '';
-  searchInput.value = '';
-  
-  if (inactivityTimer) {
-    clearTimeout(inactivityTimer);
-    inactivityTimer = null;
-  }
-  
+  homeContainer.style.display   = 'block';
+  searchResult.innerHTML        = '';
+  searchInput.value             = '';
+  if (inactivityTimer) clearTimeout(inactivityTimer);
   currentPage = 1;
   renderTable();
 }
 
-// ==================== Búsqueda por ID en la pantalla Search ====================
+// ==================== Búsqueda por ID ====================
 searchButton.addEventListener('click', () => {
-  // Limpiar cualquier temporizador previo
-  if (inactivityTimer) {
-    clearTimeout(inactivityTimer);
-  }
-  
-  // Ocultar la leyenda al hacer clic en "Search"
+  if (inactivityTimer) clearTimeout(inactivityTimer);
   searchLegend.style.display = 'none';
   searchResult.style.opacity = '1';
-  
   const query = searchInput.value.trim().toLowerCase();
-  
-  // Si el campo está vacío, regresar inmediatamente al Home
   if (!query) {
     goToHome();
     return;
   }
-  
-  // Buscar en ambos datasets (today y tomorrow) para mayor flexibilidad
-  let record = todaysRecords.find(item => item.id.toLowerCase() === query);
-  if (!record) {
-    record = tomorrowsRecords.find(item => item.id.toLowerCase() === query);
-  }
-  
-  // Iniciar temporizador de 20s para volver al Home
-  inactivityTimer = setTimeout(() => {
-    goToHome();
-  }, 20000);
-  
+  let record = todaysRecords.find(item => item.id.toLowerCase() === query)
+            || tomorrowsRecords.find(item => item.id.toLowerCase() === query);
+
+  inactivityTimer = setTimeout(goToHome, 20000);
+
   if (record) {
     searchResult.innerHTML = `
       <p><strong>We got you, here is your transfer</strong></p>
       <table class="transfer-result-table">
-        <thead>
-          <tr>
-            <th>Booking No.</th>
-            <th>Flight No.</th>
-            <th>Hotel</th>
-            <th>Pick-Up time</th>
-          </tr>
-        </thead>
+        <thead><tr>
+          <th>Booking No.</th><th>Flight No.</th><th>Hotel</th><th>Pick-Up time</th>
+        </tr></thead>
         <tbody>
           <tr>
             <td>${record.id}</td>
