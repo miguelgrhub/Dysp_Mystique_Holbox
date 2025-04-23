@@ -60,7 +60,7 @@ body {
   margin-top: 15px;
 }
 
-/* ENCABEZADO HOME y título principal */
+/* HOME & TABLE STYLES */
 .home-container h1,
 .main-title {
   text-align: center;
@@ -109,8 +109,6 @@ footer {
   margin-top: 30px;
   color: #999;
 }
-
-/* Contenedor de la tabla */
 .table-container {
   display: flex;
   flex-direction: column;
@@ -147,7 +145,7 @@ footer {
   font-size: 0.85rem;
 }
 
-/* SEARCH */
+/* SEARCH STYLES */
 #search-container {
   display: none;
 }
