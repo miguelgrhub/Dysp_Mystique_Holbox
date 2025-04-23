@@ -1,5 +1,6 @@
 /* Reset básico */
 * { box-sizing: border-box; margin: 0; padding: 0; }
+
 body {
   font-family: "DM Sans", sans-serif;
   background-color: #f7f7f7;
@@ -135,7 +136,6 @@ footer {
   font-size: 0.9rem;
 }
 .search-container h2 {
-  text-align: center;
   margin-bottom: 20px;
   color: #F17121;
 }
@@ -173,9 +173,7 @@ footer {
   margin-top: 20px;
   min-height: 50px;
 }
-.error-text {
-  color: #000;
-}
+.error-text { color: #000; }
 .transfer-result-table th, .transfer-result-table td {
   padding: 12px;
   border-bottom: 1px solid #ccc;
