@@ -1,3 +1,5 @@
+// script.js
+
 // Variables globales
 let todaysRecords    = [];
 let tomorrowsRecords = [];
@@ -8,94 +10,199 @@ let totalPages       = 1;
 let autoPageInterval = null;
 let inactivityTimer  = null;
 
-// Simon Says DOM refs
-const simonContainer = document.getElementById('simon-container');
+// Brick Breaker refs
+const brickContainer = document.getElementById('brick-container');
 const startButton    = document.getElementById('start-button');
-const gameArea       = document.getElementById('game-area');
-const messageEl      = document.getElementById('message');
-const colorButtons   = Array.from(document.querySelectorAll('.simon-button'));
+const canvas         = document.getElementById('gameCanvas');
+const ctx            = canvas.getContext('2d');
+const brickMessage   = document.getElementById('brick-message');
 
-let sequence     = [];
-let userSequence = [];
+// Brick Breaker variables
+let x        = canvas.width/2;
+let y        = canvas.height-30;
+let dx       = 2;
+let dy       = -2;
+const ballRadius       = 10;
+const paddleHeight     = 10;
+const paddleWidth      = 75;
+let paddleX            = (canvas.width-paddleWidth)/2;
+let rightPressed       = false;
+let leftPressed        = false;
+const brickRowCount    = 3;
+const brickColumnCount = 5;
+const brickWidth       = 75;
+const brickHeight      = 20;
+const brickPadding     = 10;
+const brickOffsetTop   = 30;
+const brickOffsetLeft  = 30;
+let bricks             = [];
+let score              = 0;
+let lives              = 3;
+let animationId;
 
-// Colores posibles
-const colors = ['green','red','yellow','blue'];
-
-// Iniciar Simon
-startButton.addEventListener('click', () => {
-  sequence = [];
-  messageEl.textContent = '';
-  startButton.style.display = 'none';
-  gameArea.style.display  = 'flex';
-  nextRound();
-});
-
-function nextRound() {
-  userSequence = [];
-  const next = colors[Math.floor(Math.random()*4)];
-  sequence.push(next);
-  flashSequence();
-}
-
-function flashSequence() {
-  sequence.forEach((col, i) => {
-    setTimeout(() => flashButton(col), i * 600);
-  });
-}
-
-function flashButton(color) {
-  const btn = document.querySelector(`[data-color="${color}"]`);
-  btn.classList.add('active');
-  setTimeout(() => btn.classList.remove('active'), 300);
-}
-
-colorButtons.forEach(btn => {
-  btn.addEventListener('click', () => {
-    const color = btn.dataset.color;
-    userSequence.push(color);
-    flashButton(color);
-    checkInput(userSequence.length - 1);
-  });
-});
-
-function checkInput(idx) {
-  if (userSequence[idx] !== sequence[idx]) {
-    gameOver();
-    return;
-  }
-  if (userSequence.length === sequence.length) {
-    setTimeout(nextRound, 800);
+// Inicializa el array de bricks
+function initBricks() {
+  bricks = [];
+  for (let c = 0; c < brickColumnCount; c++) {
+    bricks[c] = [];
+    for (let r = 0; r < brickRowCount; r++) {
+      bricks[c][r] = { x: 0, y: 0, status: 1 };
+    }
   }
 }
 
+// Dibuja la bola
+function drawBall() {
+  ctx.beginPath();
+  ctx.arc(x, y, ballRadius, 0, Math.PI*2);
+  ctx.fillStyle = '#0095DD';
+  ctx.fill();
+  ctx.closePath();
+}
+
+// Dibuja la paleta
+function drawPaddle() {
+  ctx.beginPath();
+  ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
+  ctx.fillStyle = '#0095DD';
+  ctx.fill();
+  ctx.closePath();
+}
+
+// Dibuja los bricks
+function drawBricks() {
+  for (let c = 0; c < brickColumnCount; c++) {
+    for (let r = 0; r < brickRowCount; r++) {
+      const b = bricks[c][r];
+      if (b.status === 1) {
+        const brickX = (c * (brickWidth + brickPadding)) + brickOffsetLeft;
+        const brickY = (r * (brickHeight + brickPadding)) + brickOffsetTop;
+        b.x = brickX; b.y = brickY;
+        ctx.beginPath();
+        ctx.rect(brickX, brickY, brickWidth, brickHeight);
+        ctx.fillStyle = '#0095DD';
+        ctx.fill();
+        ctx.closePath();
+      }
+    }
+  }
+}
+
+// Dibuja score y lives
+function drawScore() {
+  ctx.font = '16px Arial';
+  ctx.fillStyle = '#0095DD';
+  ctx.fillText('Score: ' + score, 8, 20);
+}
+function drawLives() {
+  ctx.font = '16px Arial';
+  ctx.fillStyle = '#0095DD';
+  ctx.fillText('Lives: ' + lives, canvas.width - 65, 20);
+}
+
+// Loop principal
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  drawBricks();
+  drawBall();
+  drawPaddle();
+  drawScore();
+  drawLives();
+  collisionDetection();
+
+  if (x + dx > canvas.width - ballRadius || x + dx < ballRadius) dx = -dx;
+  if (y + dy < ballRadius) dy = -dy;
+  else if (y + dy > canvas.height - ballRadius) {
+    if (x > paddleX && x < paddleX + paddleWidth) {
+      dy = -dy;
+    } else {
+      lives--;
+      if (!lives) return gameOver();
+      x = canvas.width/2;
+      y = canvas.height-30;
+      dx = 2; dy = -2;
+      paddleX = (canvas.width-paddleWidth)/2;
+    }
+  }
+
+  x += dx; y += dy;
+  if (rightPressed && paddleX < canvas.width - paddleWidth) paddleX += 7;
+  if (leftPressed && paddleX > 0) paddleX -= 7;
+
+  animationId = requestAnimationFrame(draw);
+}
+
+// Detección colisiones
+function collisionDetection() {
+  for (let c = 0; c < brickColumnCount; c++) {
+    for (let r = 0; r < brickRowCount; r++) {
+      const b = bricks[c][r];
+      if (b.status === 1 && x > b.x && x < b.x+brickWidth && y > b.y && y < b.y+brickHeight) {
+        dy = -dy;
+        b.status = 0;
+        score++;
+        if (score === brickRowCount * brickColumnCount) return win();
+      }
+    }
+  }
+}
+
+// Fin de juego
 function gameOver() {
-  messageEl.textContent     = 'Nice try — enjoy your stay!';
-  gameArea.style.display    = 'none';
+  cancelAnimationFrame(animationId);
+  brickMessage.textContent  = '¡Fin del juego!';
+  startButton.textContent   = 'Volver a jugar';
+  startButton.style.display = 'inline-block';
+}
+function win() {
+  cancelAnimationFrame(animationId);
+  brickMessage.textContent  = '¡Felicidades! Has roto todos los ladrillos.';
   startButton.textContent   = 'Volver a jugar';
   startButton.style.display = 'inline-block';
 }
 
-// Carga JSON y lógica de visualización
+// Controles teclado
+function keyDownHandler(e) {
+  if (e.key === 'Right' || e.key === 'ArrowRight') rightPressed = true;
+  if (e.key === 'Left'  || e.key === 'ArrowLeft')  leftPressed  = true;
+}
+function keyUpHandler(e) {
+  if (e.key === 'Right' || e.key === 'ArrowRight') rightPressed = false;
+  if (e.key === 'Left'  || e.key === 'ArrowLeft')  leftPressed  = false;
+}
+document.addEventListener('keydown', keyDownHandler);
+document.addEventListener('keyup',   keyUpHandler);
+
+// Iniciar Brick Breaker
+startButton.addEventListener('click', () => {
+  initBricks();
+  score = 0; lives = 3; brickMessage.textContent = '';
+  startButton.style.display = 'none';
+  draw();
+});
+
+// Carga JSON y decide qué mostrar
 window.addEventListener('DOMContentLoaded', async () => {
   try {
     const [tResp, tmResp] = await Promise.all([
       fetch('data.json'),
       fetch('data_2.json')
     ]);
-    const tData = await tResp.json();
-    const tmData= await tmResp.json();
+    const tData  = await tResp.json();
+    const tmData = await tmResp.json();
     todaysRecords    = tData.template.content || [];
     tomorrowsRecords = tmData.template.content || [];
 
     if (todaysRecords.length === 0 && tomorrowsRecords.length === 0) {
-      document.getElementById('home-container'   ).style.display = 'none';
-      document.getElementById('search-container' ).style.display = 'none';
-      simonContainer.style.display                                = 'block';
+      document.getElementById('home-container'  ).style.display = 'none';
+      document.getElementById('search-container').style.display = 'none';
+      brickContainer.style.display                               = 'block';
       return;
     }
 
-    simonContainer.style.display      = 'none';
-    document.getElementById('home-container').style.display = 'block';
+    // Mostrar tabla y search
+    brickContainer.style.display       = 'none';
+    document.getElementById('home-container').style.display   = 'block';
     currentDataset = 'today';
     totalPages     = Math.ceil(todaysRecords.length / itemsPerPage);
     updateTitle();
@@ -106,7 +213,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   }
 });
 
-// Funciones de tabla y búsqueda
+// Funciones tabla y búsqueda
 function updateTitle() {
   const mainTitle = document.getElementById('main-title');
   mainTitle.innerText = (currentDataset === 'today')
@@ -115,27 +222,21 @@ function updateTitle() {
 }
 
 function renderTable() {
-  if (autoPageInterval) {
-    clearInterval(autoPageInterval);
-    autoPageInterval = null;
-  }
-  const currentRecords = (currentDataset === 'today')
-    ? todaysRecords
-    : tomorrowsRecords;
-  totalPages = Math.ceil(currentRecords.length / itemsPerPage);
-  const startIdx = (currentPage - 1) * itemsPerPage;
-  const slice   = currentRecords.slice(startIdx, startIdx + itemsPerPage);
+  if (autoPageInterval) clearInterval(autoPageInterval);
+  const records = (currentDataset === 'today')
+    ? todaysRecords : tomorrowsRecords;
+  totalPages = Math.ceil(records.length / itemsPerPage);
+  const start = (currentPage - 1) * itemsPerPage;
+  const page = records.slice(start, start + itemsPerPage);
 
   let html = `<table><thead><tr>
     <th>Booking No.</th><th>Flight No.</th>
     <th>Hotel</th><th>Pick-Up time</th>
   </tr></thead><tbody>`;
-  slice.forEach(item => {
+  page.forEach(i => {
     html += `<tr>
-      <td>${item.id}</td>
-      <td>${item.Flight}</td>
-      <td>${item.HotelName}</td>
-      <td>${item.Time}</td>
+      <td>${i.id}</td><td>${i.Flight}</td>
+      <td>${i.HotelName}</td><td>${i.Time}</td>
     </tr>`;
   });
   html += `</tbody></table>`;
@@ -167,16 +268,16 @@ const searchLegend      = document.getElementById('search-legend');
 const searchResult      = document.getElementById('search-result');
 
 searchTransferBtn.addEventListener('click', goToSearch);
-adventureBtn     .addEventListener('click', () => alert('Implement logic'));
-backHomeBtn      .addEventListener('click',    goToHome);
+adventureBtn     .addEventListener('click',     () => alert('Implement logic'));
+backHomeBtn      .addEventListener('click',     goToHome);
 
 function goToSearch() {
   document.getElementById('home-container'  ).style.display = 'none';
   document.getElementById('search-container').style.display = 'block';
   searchLegend.style.display = 'block';
   searchResult.innerHTML     = '';
-  if (autoPageInterval) clearInterval(autoPageInterval);
-  if (inactivityTimer ) clearTimeout(inactivityTimer );
+  clearInterval(autoPageInterval);
+  clearTimeout(inactivityTimer);
 }
 
 function goToHome() {
@@ -187,7 +288,7 @@ function goToHome() {
 }
 
 searchButton.addEventListener('click', () => {
-  if (inactivityTimer) clearTimeout(inactivityTimer);
+  clearTimeout(inactivityTimer);
   searchLegend.style.display = 'none';
   const q = searchInput.value.trim().toLowerCase();
   if (!q) { goToHome(); return; }
