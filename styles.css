@@ -13,51 +13,51 @@ body {
   padding: 20px;
 }
 
-/* MEMORAMA */
-#memorama-container {
+/* SIMON SAYS */
+#simon-container {
   display: none;
   text-align: center;
   margin-top: 50px;
 }
-#memorama-container h2 {
-  color: #F17121;
-  margin-bottom: 10px;
-}
-.memorama-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 15px;
-  max-width: 500px;
-  margin: 20px auto;
-}
-.card {
-  background: #ccc;
-  border-radius: 8px;
-  height: 100px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.play-button {
+  padding: 20px 40px;
   font-size: 2rem;
-  cursor: pointer;
-  user-select: none;
-  transition: background 0.3s;
-}
-.card.flipped {
-  background: #fff;
-}
-.card.matched {
-  visibility: hidden;
-}
-#reset-memorama {
-  display: none;
-  margin-top: 20px;
-  padding: 8px 12px;
-  font-size: 1rem;
-  background-color: #F17121;
+  background: linear-gradient(45deg, #F17121, #FFD700);
   color: #fff;
   border: none;
-  border-radius: 4px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
   cursor: pointer;
+  margin-bottom: 20px;
+}
+.game-area {
+  display: none;
+}
+.simon-row {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+.simon-button {
+  width: 100px;
+  height: 100px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+#btn-green  { background: #2ecc71; }
+#btn-red    { background: #e74c3c; }
+#btn-yellow { background: #f1c40f; }
+#btn-blue   { background: #3498db; }
+.simon-button.active {
+  opacity: 0.5;
+}
+.message {
+  font-size: 1.2rem;
+  color: #F17121;
+  margin-top: 15px;
 }
 
 /* ENCABEZADO HOME y título principal */
@@ -67,16 +67,12 @@ body {
   margin-bottom: 20px;
   color: #333;
 }
-
-/* Botones de la parte superior (Home) */
 .top-buttons {
   display: flex;
   justify-content: center;
   gap: 10px;
   margin-bottom: 20px;
 }
-
-/* Botón grande en Home */
 .big-home-button {
   width: 96.5%;
   height: 120px;
@@ -89,8 +85,6 @@ body {
 .big-home-button .icon {
   font-size: 1.6rem;
 }
-
-/* Botones base */
 .btn-primary,
 .btn-secondary {
   border: none;
@@ -110,8 +104,6 @@ body {
   background-color: #eee;
   color: #333;
 }
-
-/* Pie de página */
 footer {
   text-align: center;
   margin-top: 30px;
@@ -130,10 +122,8 @@ footer {
   background: #FFF;
   margin: 0 auto;
   max-width: 944px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
-
-/* Estilo de la tabla */
 .table-container table {
   width: 100%;
   border-collapse: collapse;
@@ -150,8 +140,6 @@ footer {
   color: #F17121;
   font-weight: bold;
 }
-
-/* Indicador de página */
 .auto-page-info {
   text-align: center;
   width: 100%;
@@ -160,7 +148,9 @@ footer {
 }
 
 /* SEARCH */
-#search-container { display: none; }
+#search-container {
+  display: none;
+}
 .search-container {
   max-width: 600px;
   margin: 0 auto;
@@ -239,8 +229,12 @@ footer {
   color: #F17121;
   font-weight: bold;
 }
-.icon { font-size: 1.6rem; }
-.hide { display: none !important; }
+.icon {
+  font-size: 1.6rem;
+}
+.hide {
+  display: none !important;
+}
 .qr-container {
   text-align: center;
   margin-top: 20px;
