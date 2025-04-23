@@ -8,7 +8,7 @@ let totalPages       = 1;
 let autoPageInterval = null;
 let inactivityTimer  = null;
 
-// Plane Runner DOM refs
+// Plane Runner refs
 const runnerContainer = document.getElementById('runner-container');
 const startBtn        = document.getElementById('start-button');
 const canvas          = document.getElementById('runnerCanvas');
@@ -28,10 +28,10 @@ let gameLoop;
 // Dibuja escena
 function drawRunner() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  // ground
+  // suelo
   ctx.fillStyle = '#555';
   ctx.fillRect(0, 180, canvas.width, 20);
-  // plane (triángulo)
+  // avioncito
   ctx.fillStyle = '#F17121';
   ctx.beginPath();
   ctx.moveTo(50, planeY);
@@ -39,16 +39,16 @@ function drawRunner() {
   ctx.lineTo(30, planeY - 15);
   ctx.closePath();
   ctx.fill();
-  // obstacles
+  // obstáculos
   ctx.fillStyle = '#333';
   obstacles.forEach(o => ctx.fillRect(o.x, 160, 20, 20));
-  // score
+  // puntaje
   ctx.fillStyle = '#000';
   ctx.font = '16px Arial';
   ctx.fillText('Score: ' + score, 10, 20);
 }
 
-// Update loop
+// Lógica loop
 function updateRunner() {
   planeV += gravity;
   planeY += planeV;
@@ -56,7 +56,7 @@ function updateRunner() {
   if (frame % 90 === 0) obstacles.push({ x: canvas.width });
   obstacles.forEach(o => { o.x -= 6; if (o.x + 20 < 0) score++; });
   obstacles = obstacles.filter(o => o.x > -20);
-  // collision
+  // colisión
   obstacles.forEach(o => {
     if (50 > o.x && 50 < o.x + 20 && planeY > 160) stopRunner();
   });
@@ -64,7 +64,7 @@ function updateRunner() {
   frame++;
 }
 
-// Start/stop
+// Iniciar/detener
 function startRunner() {
   obstacles = [];
   frame     = 0;
@@ -77,17 +77,17 @@ function startRunner() {
 }
 function stopRunner() {
   clearInterval(gameLoop);
-  runnerMsg.textContent    = 'Nice try — enjoy your stay!';
-  startBtn.textContent     = 'Volver a jugar';
-  startBtn.style.display   = 'inline-block';
+  runnerMsg.textContent  = 'Nice try — enjoy your stay!';
+  startBtn.textContent   = 'Volver a jugar';
+  startBtn.style.display = 'inline-block';
 }
 
-// Events
+// Eventos
 startBtn.addEventListener('click', startRunner);
 canvas.addEventListener('click', () => planeV = jumpV);
 document.addEventListener('keydown', e => { if (e.key === ' ') planeV = jumpV; });
 
-// Carga JSON y lógica principal
+// Carga JSON y decide qué mostrar
 window.addEventListener('DOMContentLoaded', async () => {
   try {
     const [tResp, tmResp] = await Promise.all([
@@ -104,7 +104,7 @@ window.addEventListener('DOMContentLoaded', async () => {
       document.getElementById('search-container').style.display = 'none';
       runnerContainer.style.display                            = 'block';
     } else {
-      runnerContainer.style.display         = 'none';
+      runnerContainer.style.display       = 'none';
       document.getElementById('home-container').style.display   = 'block';
       currentDataset = 'today';
       totalPages     = Math.ceil(todaysRecords.length / itemsPerPage);
@@ -116,7 +116,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   }
 });
 
-// TABLA & SEARCH
+// TABLA & SEARCH (tu código original)
 function updateTitle() {
   const mainTitle = document.getElementById('main-title');
   mainTitle.innerText = (currentDataset === 'today')
@@ -126,10 +126,11 @@ function updateTitle() {
 
 function renderTable() {
   if (autoPageInterval) clearInterval(autoPageInterval);
-  const records = (currentDataset === 'today') ? todaysRecords : tomorrowsRecords;
-  totalPages     = Math.ceil(records.length / itemsPerPage);
-  const start    = (currentPage - 1) * itemsPerPage;
-  const page     = records.slice(start, start + itemsPerPage);
+  const records = (currentDataset === 'today')
+    ? todaysRecords : tomorrowsRecords;
+  totalPages = Math.ceil(records.length / itemsPerPage);
+  const start = (currentPage - 1) * itemsPerPage;
+  const page  = records.slice(start, start + itemsPerPage);
 
   let html = `<table><thead><tr>
     <th>Booking No.</th><th>Flight No.</th>
@@ -137,10 +138,8 @@ function renderTable() {
   </tr></thead><tbody>`;
   page.forEach(i => {
     html += `<tr>
-      <td>${i.id}</td>
-      <td>${i.Flight}</td>
-      <td>${i.HotelName}</td>
-      <td>${i.Time}</td>
+      <td>${i.id}</td><td>${i.Flight}</td>
+      <td>${i.HotelName}</td><td>${i.Time}</td>
     </tr>`;
   });
   html += `</tbody></table>`;
@@ -156,7 +155,7 @@ function startAutoPagination() {
     currentPage++;
     if (currentPage > totalPages) {
       currentDataset = (currentDataset === 'today') ? 'tomorrow' : 'today';
-      currentPage    = 1;
+      currentPage = 1;
       updateTitle();
     }
     renderTable();
@@ -172,21 +171,21 @@ const searchLegend      = document.getElementById('search-legend');
 const searchResult      = document.getElementById('search-result');
 
 searchTransferBtn.addEventListener('click', goToSearch);
-adventureBtn     .addEventListener('click', () => alert('Implement logic'));
-backHomeBtn      .addEventListener('click', goToHome);
+adventureBtn.addEventListener('click', () => alert('Implement logic'));
+backHomeBtn.addEventListener('click', goToHome);
 
 function goToSearch() {
-  document.getElementById('home-container').style.display   = 'none';
-  document.getElementById('search-container').style.display = 'block';
-  searchLegend.style.display = 'block';
-  searchResult.innerHTML     = '';
+  homeContainer.style.display   = 'none';
+  searchContainer.style.display = 'block';
+  searchLegend.style.display    = 'block';
+  searchResult.innerHTML        = '';
   if (autoPageInterval) clearInterval(autoPageInterval);
   if (inactivityTimer) clearTimeout(inactivityTimer);
 }
 
 function goToHome() {
-  document.getElementById('search-container').style.display = 'none';
-  document.getElementById('home-container').style.display   = 'block';
+  searchContainer.style.display = 'none';
+  homeContainer.style.display   = 'block';
   currentPage = 1;
   renderTable();
 }
@@ -201,20 +200,13 @@ searchButton.addEventListener('click', () => {
   inactivityTimer = setTimeout(goToHome, 20000);
   if (rec) {
     searchResult.innerHTML = `<p><strong>We got you, here is your transfer</strong></p>
-      <table class="transfer-result-table">
-        <thead><tr>
-          <th>Booking No.</th><th>Flight No.</th>
-          <th>Hotel</th><th>Pick-Up time</th>
-        </tr></thead>
-        <tbody>
-          <tr>
-            <td>${rec.id}</td>
-            <td>${rec.Flight}</td>
-            <td>${rec.HotelName}</td>
-            <td>${rec.Time}</td>
-          </tr>
-        </tbody>
-      </table>`;
+    <table class="transfer-result-table"><thead><tr>
+      <th>Booking No.</th><th>Flight No.</th><th>Hotel</th><th>Pick-Up time</th>
+    </tr></thead><tbody>
+      <tr>
+        <td>${rec.id}</td><td>${rec.Flight}</td><td>${rec.HotelName}</td><td>${rec.Time}</td>
+      </tr>
+    </tbody></table>`;
   } else {
     searchResult.innerHTML = `<p class="error-text">
       If you have any questions about your pickup transfer time,<br>
