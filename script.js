@@ -30,7 +30,7 @@ function drawRunner() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   // suelo
   ctx.fillStyle = '#555';
-  ctx.fillRect(0, 180, canvas.width, 20);
+  ctx.fillRect(0, canvas.height - 20, canvas.width, 20);
   // avioncito
   ctx.fillStyle = '#F17121';
   ctx.beginPath();
@@ -41,25 +41,35 @@ function drawRunner() {
   ctx.fill();
   // obstáculos
   ctx.fillStyle = '#333';
-  obstacles.forEach(o => ctx.fillRect(o.x, 160, 20, 20));
+  obstacles.forEach(o => ctx.fillRect(o.x, canvas.height - 40, 20, 20));
   // puntaje
   ctx.fillStyle = '#000';
   ctx.font = '16px Arial';
   ctx.fillText('Score: ' + score, 10, 20);
 }
 
-// Lógica loop
+// Lógica loop con dificultad dinámica
 function updateRunner() {
   planeV += gravity;
   planeY += planeV;
-  if (planeY > 170) planeY = 170, planeV = 0;
-  if (frame % 90 === 0) obstacles.push({ x: canvas.width });
-  obstacles.forEach(o => { o.x -= 6; if (o.x + 20 < 0) score++; });
+  if (planeY > canvas.height - 50) planeY = canvas.height - 50, planeV = 0;
+
+  // Spawn rate baja con puntaje (más obstáculos)
+  const spawnRate = Math.max(30, 90 - score * 2);
+  if (frame % spawnRate === 0) obstacles.push({ x: canvas.width });
+
+  // Velocidad sube con puntaje
+  const speed = 6 + score * 0.1;
+  obstacles.forEach(o => { o.x -= speed; if (o.x + 20 < 0) score++; });
   obstacles = obstacles.filter(o => o.x > -20);
-  // colisión
+
+  // Colisión
   obstacles.forEach(o => {
-    if (50 > o.x && 50 < o.x + 20 && planeY > 160) stopRunner();
+    if (50 > o.x && 50 < o.x + 20 && planeY > canvas.height - 60) {
+      stopRunner();
+    }
   });
+
   drawRunner();
   frame++;
 }
@@ -104,7 +114,7 @@ window.addEventListener('DOMContentLoaded', async () => {
       document.getElementById('search-container').style.display = 'none';
       runnerContainer.style.display                            = 'block';
     } else {
-      runnerContainer.style.display       = 'none';
+      runnerContainer.style.display         = 'none';
       document.getElementById('home-container').style.display   = 'block';
       currentDataset = 'today';
       totalPages     = Math.ceil(todaysRecords.length / itemsPerPage);
@@ -126,17 +136,16 @@ function updateTitle() {
 
 function renderTable() {
   if (autoPageInterval) clearInterval(autoPageInterval);
-  const records = (currentDataset === 'today')
-    ? todaysRecords : tomorrowsRecords;
-  totalPages = Math.ceil(records.length / itemsPerPage);
-  const start = (currentPage - 1) * itemsPerPage;
-  const page  = records.slice(start, start + itemsPerPage);
+  const records = currentDataset === 'today' ? todaysRecords : tomorrowsRecords;
+  totalPages     = Math.ceil(records.length / itemsPerPage);
+  const startIdx = (currentPage - 1) * itemsPerPage;
+  const pageRec  = records.slice(startIdx, startIdx + itemsPerPage);
 
   let html = `<table><thead><tr>
     <th>Booking No.</th><th>Flight No.</th>
     <th>Hotel</th><th>Pick-Up time</th>
   </tr></thead><tbody>`;
-  page.forEach(i => {
+  pageRec.forEach(i => {
     html += `<tr>
       <td>${i.id}</td><td>${i.Flight}</td>
       <td>${i.HotelName}</td><td>${i.Time}</td>
@@ -154,8 +163,8 @@ function startAutoPagination() {
   autoPageInterval = setInterval(() => {
     currentPage++;
     if (currentPage > totalPages) {
-      currentDataset = (currentDataset === 'today') ? 'tomorrow' : 'today';
-      currentPage = 1;
+      currentDataset = currentDataset === 'today' ? 'tomorrow' : 'today';
+      currentPage    = 1;
       updateTitle();
     }
     renderTable();
@@ -175,17 +184,17 @@ adventureBtn.addEventListener('click', () => alert('Implement logic'));
 backHomeBtn.addEventListener('click', goToHome);
 
 function goToSearch() {
-  homeContainer.style.display   = 'none';
-  searchContainer.style.display = 'block';
-  searchLegend.style.display    = 'block';
-  searchResult.innerHTML        = '';
+  document.getElementById('home-container').style.display   = 'none';
+  document.getElementById('search-container').style.display = 'block';
+  searchLegend.style.display = 'block';
+  searchResult.innerHTML     = '';
   if (autoPageInterval) clearInterval(autoPageInterval);
   if (inactivityTimer) clearTimeout(inactivityTimer);
 }
 
 function goToHome() {
-  searchContainer.style.display = 'none';
-  homeContainer.style.display   = 'block';
+  document.getElementById('search-container').style.display = 'none';
+  document.getElementById('home-container').style.display   = 'block';
   currentPage = 1;
   renderTable();
 }
@@ -200,13 +209,15 @@ searchButton.addEventListener('click', () => {
   inactivityTimer = setTimeout(goToHome, 20000);
   if (rec) {
     searchResult.innerHTML = `<p><strong>We got you, here is your transfer</strong></p>
-    <table class="transfer-result-table"><thead><tr>
-      <th>Booking No.</th><th>Flight No.</th><th>Hotel</th><th>Pick-Up time</th>
-    </tr></thead><tbody>
-      <tr>
-        <td>${rec.id}</td><td>${rec.Flight}</td><td>${rec.HotelName}</td><td>${rec.Time}</td>
-      </tr>
-    </tbody></table>`;
+      <table class="transfer-result-table">
+        <thead><tr>
+          <th>Booking No.</th><th>Flight No.</th><th>Hotel</th><th>Pick-Up time</th>
+        </tr></thead><tbody>
+          <tr>
+            <td>${rec.id}</td><td>${rec.Flight}</td><td>${rec.HotelName}</td><td>${rec.Time}</td>
+          </tr>
+        </tbody>
+      </table>`;
   } else {
     searchResult.innerHTML = `<p class="error-text">
       If you have any questions about your pickup transfer time,<br>
