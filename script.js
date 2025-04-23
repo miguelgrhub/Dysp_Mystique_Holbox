@@ -1,5 +1,3 @@
-// script.js
-
 // Variables globales
 let todaysRecords    = [];
 let tomorrowsRecords = [];
@@ -10,178 +8,86 @@ let totalPages       = 1;
 let autoPageInterval = null;
 let inactivityTimer  = null;
 
-// Brick Breaker refs
-const brickContainer = document.getElementById('brick-container');
-const startButton    = document.getElementById('start-button');
-const canvas         = document.getElementById('gameCanvas');
-const ctx            = canvas.getContext('2d');
-const brickMessage   = document.getElementById('brick-message');
+// Plane Runner DOM refs
+const runnerContainer = document.getElementById('runner-container');
+const startBtn        = document.getElementById('start-button');
+const canvas          = document.getElementById('runnerCanvas');
+const ctx             = canvas.getContext('2d');
+const runnerMsg       = document.getElementById('runner-message');
 
-// Brick Breaker variables
-let x        = canvas.width/2;
-let y        = canvas.height-30;
-let dx       = 2;
-let dy       = -2;
-const ballRadius       = 10;
-const paddleHeight     = 10;
-const paddleWidth      = 75;
-let paddleX            = (canvas.width-paddleWidth)/2;
-let rightPressed       = false;
-let leftPressed        = false;
-const brickRowCount    = 3;
-const brickColumnCount = 5;
-const brickWidth       = 75;
-const brickHeight      = 20;
-const brickPadding     = 10;
-const brickOffsetTop   = 30;
-const brickOffsetLeft  = 30;
-let bricks             = [];
-let score              = 0;
-let lives              = 3;
-let animationId;
+// Runner state
+let planeY    = 150;
+let planeV    = 0;
+const gravity = 0.6;
+const jumpV   = -10;
+let obstacles = [];
+let frame     = 0;
+let score     = 0;
+let gameLoop;
 
-// Inicializa el array de bricks
-function initBricks() {
-  bricks = [];
-  for (let c = 0; c < brickColumnCount; c++) {
-    bricks[c] = [];
-    for (let r = 0; r < brickRowCount; r++) {
-      bricks[c][r] = { x: 0, y: 0, status: 1 };
-    }
-  }
-}
-
-// Dibuja la bola
-function drawBall() {
-  ctx.beginPath();
-  ctx.arc(x, y, ballRadius, 0, Math.PI*2);
-  ctx.fillStyle = '#0095DD';
-  ctx.fill();
-  ctx.closePath();
-}
-
-// Dibuja la paleta
-function drawPaddle() {
-  ctx.beginPath();
-  ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
-  ctx.fillStyle = '#0095DD';
-  ctx.fill();
-  ctx.closePath();
-}
-
-// Dibuja los bricks
-function drawBricks() {
-  for (let c = 0; c < brickColumnCount; c++) {
-    for (let r = 0; r < brickRowCount; r++) {
-      const b = bricks[c][r];
-      if (b.status === 1) {
-        const brickX = (c * (brickWidth + brickPadding)) + brickOffsetLeft;
-        const brickY = (r * (brickHeight + brickPadding)) + brickOffsetTop;
-        b.x = brickX; b.y = brickY;
-        ctx.beginPath();
-        ctx.rect(brickX, brickY, brickWidth, brickHeight);
-        ctx.fillStyle = '#0095DD';
-        ctx.fill();
-        ctx.closePath();
-      }
-    }
-  }
-}
-
-// Dibuja score y lives
-function drawScore() {
-  ctx.font = '16px Arial';
-  ctx.fillStyle = '#0095DD';
-  ctx.fillText('Score: ' + score, 8, 20);
-}
-function drawLives() {
-  ctx.font = '16px Arial';
-  ctx.fillStyle = '#0095DD';
-  ctx.fillText('Lives: ' + lives, canvas.width - 65, 20);
-}
-
-// Loop principal
-function draw() {
+// Dibuja escena
+function drawRunner() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  drawBricks();
-  drawBall();
-  drawPaddle();
-  drawScore();
-  drawLives();
-  collisionDetection();
-
-  if (x + dx > canvas.width - ballRadius || x + dx < ballRadius) dx = -dx;
-  if (y + dy < ballRadius) dy = -dy;
-  else if (y + dy > canvas.height - ballRadius) {
-    if (x > paddleX && x < paddleX + paddleWidth) {
-      dy = -dy;
-    } else {
-      lives--;
-      if (!lives) return gameOver();
-      x = canvas.width/2;
-      y = canvas.height-30;
-      dx = 2; dy = -2;
-      paddleX = (canvas.width-paddleWidth)/2;
-    }
-  }
-
-  x += dx; y += dy;
-  if (rightPressed && paddleX < canvas.width - paddleWidth) paddleX += 7;
-  if (leftPressed && paddleX > 0) paddleX -= 7;
-
-  animationId = requestAnimationFrame(draw);
+  // ground
+  ctx.fillStyle = '#555';
+  ctx.fillRect(0, 180, canvas.width, 20);
+  // plane (triángulo)
+  ctx.fillStyle = '#F17121';
+  ctx.beginPath();
+  ctx.moveTo(50, planeY);
+  ctx.lineTo(30, planeY + 15);
+  ctx.lineTo(30, planeY - 15);
+  ctx.closePath();
+  ctx.fill();
+  // obstacles
+  ctx.fillStyle = '#333';
+  obstacles.forEach(o => ctx.fillRect(o.x, 160, 20, 20));
+  // score
+  ctx.fillStyle = '#000';
+  ctx.font = '16px Arial';
+  ctx.fillText('Score: ' + score, 10, 20);
 }
 
-// Detección colisiones
-function collisionDetection() {
-  for (let c = 0; c < brickColumnCount; c++) {
-    for (let r = 0; r < brickRowCount; r++) {
-      const b = bricks[c][r];
-      if (b.status === 1 && x > b.x && x < b.x+brickWidth && y > b.y && y < b.y+brickHeight) {
-        dy = -dy;
-        b.status = 0;
-        score++;
-        if (score === brickRowCount * brickColumnCount) return win();
-      }
-    }
-  }
+// Update loop
+function updateRunner() {
+  planeV += gravity;
+  planeY += planeV;
+  if (planeY > 170) planeY = 170, planeV = 0;
+  if (frame % 90 === 0) obstacles.push({ x: canvas.width });
+  obstacles.forEach(o => { o.x -= 6; if (o.x + 20 < 0) score++; });
+  obstacles = obstacles.filter(o => o.x > -20);
+  // collision
+  obstacles.forEach(o => {
+    if (50 > o.x && 50 < o.x + 20 && planeY > 160) stopRunner();
+  });
+  drawRunner();
+  frame++;
 }
 
-// Fin de juego
-function gameOver() {
-  cancelAnimationFrame(animationId);
-  brickMessage.textContent  = '¡Fin del juego!';
-  startButton.textContent   = 'Volver a jugar';
-  startButton.style.display = 'inline-block';
+// Start/stop
+function startRunner() {
+  obstacles = [];
+  frame     = 0;
+  score     = 0;
+  planeY    = 150;
+  planeV    = 0;
+  runnerMsg.textContent = '';
+  startBtn.style.display = 'none';
+  gameLoop = setInterval(updateRunner, 1000 / 60);
 }
-function win() {
-  cancelAnimationFrame(animationId);
-  brickMessage.textContent  = '¡Felicidades! Has roto todos los ladrillos.';
-  startButton.textContent   = 'Volver a jugar';
-  startButton.style.display = 'inline-block';
+function stopRunner() {
+  clearInterval(gameLoop);
+  runnerMsg.textContent    = 'Nice try — enjoy your stay!';
+  startBtn.textContent     = 'Volver a jugar';
+  startBtn.style.display   = 'inline-block';
 }
 
-// Controles teclado
-function keyDownHandler(e) {
-  if (e.key === 'Right' || e.key === 'ArrowRight') rightPressed = true;
-  if (e.key === 'Left'  || e.key === 'ArrowLeft')  leftPressed  = true;
-}
-function keyUpHandler(e) {
-  if (e.key === 'Right' || e.key === 'ArrowRight') rightPressed = false;
-  if (e.key === 'Left'  || e.key === 'ArrowLeft')  leftPressed  = false;
-}
-document.addEventListener('keydown', keyDownHandler);
-document.addEventListener('keyup',   keyUpHandler);
+// Events
+startBtn.addEventListener('click', startRunner);
+canvas.addEventListener('click', () => planeV = jumpV);
+document.addEventListener('keydown', e => { if (e.key === ' ') planeV = jumpV; });
 
-// Iniciar Brick Breaker
-startButton.addEventListener('click', () => {
-  initBricks();
-  score = 0; lives = 3; brickMessage.textContent = '';
-  startButton.style.display = 'none';
-  draw();
-});
-
-// Carga JSON y decide qué mostrar
+// Carga JSON y lógica principal
 window.addEventListener('DOMContentLoaded', async () => {
   try {
     const [tResp, tmResp] = await Promise.all([
@@ -194,26 +100,23 @@ window.addEventListener('DOMContentLoaded', async () => {
     tomorrowsRecords = tmData.template.content || [];
 
     if (todaysRecords.length === 0 && tomorrowsRecords.length === 0) {
-      document.getElementById('home-container'  ).style.display = 'none';
+      document.getElementById('home-container').style.display   = 'none';
       document.getElementById('search-container').style.display = 'none';
-      brickContainer.style.display                               = 'block';
-      return;
+      runnerContainer.style.display                            = 'block';
+    } else {
+      runnerContainer.style.display         = 'none';
+      document.getElementById('home-container').style.display   = 'block';
+      currentDataset = 'today';
+      totalPages     = Math.ceil(todaysRecords.length / itemsPerPage);
+      updateTitle();
+      renderTable();
     }
-
-    // Mostrar tabla y search
-    brickContainer.style.display       = 'none';
-    document.getElementById('home-container').style.display   = 'block';
-    currentDataset = 'today';
-    totalPages     = Math.ceil(todaysRecords.length / itemsPerPage);
-    updateTitle();
-    renderTable();
-
   } catch (err) {
     console.error(err);
   }
 });
 
-// Funciones tabla y búsqueda
+// TABLA & SEARCH
 function updateTitle() {
   const mainTitle = document.getElementById('main-title');
   mainTitle.innerText = (currentDataset === 'today')
@@ -223,11 +126,10 @@ function updateTitle() {
 
 function renderTable() {
   if (autoPageInterval) clearInterval(autoPageInterval);
-  const records = (currentDataset === 'today')
-    ? todaysRecords : tomorrowsRecords;
-  totalPages = Math.ceil(records.length / itemsPerPage);
-  const start = (currentPage - 1) * itemsPerPage;
-  const page = records.slice(start, start + itemsPerPage);
+  const records = (currentDataset === 'today') ? todaysRecords : tomorrowsRecords;
+  totalPages     = Math.ceil(records.length / itemsPerPage);
+  const start    = (currentPage - 1) * itemsPerPage;
+  const page     = records.slice(start, start + itemsPerPage);
 
   let html = `<table><thead><tr>
     <th>Booking No.</th><th>Flight No.</th>
@@ -235,8 +137,10 @@ function renderTable() {
   </tr></thead><tbody>`;
   page.forEach(i => {
     html += `<tr>
-      <td>${i.id}</td><td>${i.Flight}</td>
-      <td>${i.HotelName}</td><td>${i.Time}</td>
+      <td>${i.id}</td>
+      <td>${i.Flight}</td>
+      <td>${i.HotelName}</td>
+      <td>${i.Time}</td>
     </tr>`;
   });
   html += `</tbody></table>`;
@@ -268,27 +172,27 @@ const searchLegend      = document.getElementById('search-legend');
 const searchResult      = document.getElementById('search-result');
 
 searchTransferBtn.addEventListener('click', goToSearch);
-adventureBtn     .addEventListener('click',     () => alert('Implement logic'));
-backHomeBtn      .addEventListener('click',     goToHome);
+adventureBtn     .addEventListener('click', () => alert('Implement logic'));
+backHomeBtn      .addEventListener('click', goToHome);
 
 function goToSearch() {
-  document.getElementById('home-container'  ).style.display = 'none';
+  document.getElementById('home-container').style.display   = 'none';
   document.getElementById('search-container').style.display = 'block';
   searchLegend.style.display = 'block';
   searchResult.innerHTML     = '';
-  clearInterval(autoPageInterval);
-  clearTimeout(inactivityTimer);
+  if (autoPageInterval) clearInterval(autoPageInterval);
+  if (inactivityTimer) clearTimeout(inactivityTimer);
 }
 
 function goToHome() {
   document.getElementById('search-container').style.display = 'none';
-  document.getElementById('home-container'  ).style.display = 'block';
+  document.getElementById('home-container').style.display   = 'block';
   currentPage = 1;
   renderTable();
 }
 
 searchButton.addEventListener('click', () => {
-  clearTimeout(inactivityTimer);
+  if (inactivityTimer) clearTimeout(inactivityTimer);
   searchLegend.style.display = 'none';
   const q = searchInput.value.trim().toLowerCase();
   if (!q) { goToHome(); return; }
