@@ -1,3 +1,4 @@
+/* styles.css */
 /* Reset básico */
 * {
   box-sizing: border-box;
@@ -12,6 +13,26 @@ body {
   color: #333;
   min-height: 100vh;
   padding: 20px;
+}
+
+/* ================= Mensaje vacío ================= */
+#empty-container {
+  display: none;
+  text-align: center;
+  margin-top: 100px;
+}
+#empty-container .arrow {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+  animation: bounce 1s infinite alternate;
+}
+#empty-container p {
+  font-size: 1.2rem;
+  color: #444;
+}
+@keyframes bounce {
+  from { transform: translateY(0); }
+  to   { transform: translateY(-10px); }
 }
 
 /* ENCABEZADO HOME y título principal */
@@ -203,22 +224,6 @@ footer {
   font-weight: normal;
 }
 
-/* Tabla para el resultado de la búsqueda */
-/*.transfer-result-table {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 26px;
-  padding: 6px;
-  margin: 10px auto;
-  border-collapse: collapse;
-  width: 100%;
-  max-width: 944px;
-  border: 2px solid #D0DFDF;
-  border-radius: 20px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}*/
-
 .transfer-result-table th,
 .transfer-result-table td {
   padding: 12px;
@@ -245,7 +250,7 @@ footer {
 /* QR container para error */
 .qr-container {
   text-align: center;
-  margin-top: 20px; /* Más separación del texto */
+  margin-top: 20px;
 }
 
 .qr-container img {
@@ -253,13 +258,8 @@ footer {
   width: 100%;
   height: auto;
 }
+
 .logo_nexus_bdr {
   width: 90%;
   max-width: 944px;
 }
-
-/*.result {
-  background: transparent;
-    border: none;
-    box-shadow: none;
-}*/
