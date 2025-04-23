@@ -1,119 +1,81 @@
-// script.js
-
 // Variables globales
-let todaysRecords = [];
+let todaysRecords    = [];
 let tomorrowsRecords = [];
-let currentDataset = "today";
-let currentPage = 1;
-const itemsPerPage = 15;
-let totalPages = 1;
+let currentDataset   = "today";
+let currentPage      = 1;
+const itemsPerPage   = 15;
+let totalPages       = 1;
 let autoPageInterval = null;
-let inactivityTimer = null;
+let inactivityTimer  = null;
 
-// DOM references memorama
-const memoramaContainer = document.getElementById('memorama-container');
-const memoramaGrid      = document.getElementById('memorama-grid');
-const resetMemoramaBtn  = document.getElementById('reset-memorama');
+// Simon Says DOM refs
+const simonContainer = document.getElementById('simon-container');
+const startButton    = document.getElementById('start-button');
+const gameArea       = document.getElementById('game-area');
+const messageEl      = document.getElementById('message');
+const colorButtons   = Array.from(document.querySelectorAll('.simon-button'));
 
-let firstCard    = null;
-let secondCard   = null;
-let lockBoard    = false;
-let matchesFound = 0;
+let sequence     = [];
+let userSequence = [];
 
-const totalPairs = 6;
-const cardValues = ['🍎','🍌','🍇','🍉','🍓','🥝'];
+// Colores posibles
+const colors = ['green','red','yellow','blue'];
 
-// DOM references existentes
-const homeContainer     = document.getElementById('home-container');
-const searchContainer   = document.getElementById('search-container');
-const tableContainer    = document.getElementById('table-container');
-const searchTransferBtn = document.getElementById('search-transfer-btn');
-const adventureBtn      = document.getElementById('adventure-btn');
-const backHomeBtn       = document.getElementById('back-home-btn');
-const searchInput       = document.getElementById('search-input');
-const searchButton      = document.getElementById('search-button');
-const searchResult      = document.getElementById('search-result');
-const searchLegend      = document.getElementById('search-legend');
-const mainTitle         = document.getElementById('main-title');
+// Iniciar Simon
+startButton.addEventListener('click', () => {
+  sequence = [];
+  messageEl.textContent = '';
+  startButton.style.display = 'none';
+  gameArea.style.display  = 'flex';
+  nextRound();
+});
 
-// Funciones memorama
-function initMemorama() {
-  firstCard = null;
-  secondCard = null;
-  lockBoard = false;
-  matchesFound = 0;
-  resetMemoramaBtn.style.display = 'none';
-  memoramaGrid.innerHTML = '';
+function nextRound() {
+  userSequence = [];
+  const next = colors[Math.floor(Math.random()*4)];
+  sequence.push(next);
+  flashSequence();
+}
 
-  const deck = [...cardValues, ...cardValues];
-  shuffle(deck);
-  deck.forEach(value => {
-    const card = document.createElement('div');
-    card.classList.add('card');
-    card.dataset.value = value;
-    card.innerText = '';
-    card.addEventListener('click', onCardClick);
-    memoramaGrid.appendChild(card);
+function flashSequence() {
+  sequence.forEach((col, i) => {
+    setTimeout(() => flashButton(col), i * 600);
   });
 }
 
-function onCardClick(e) {
-  if (lockBoard) return;
-  const card = e.target;
-  if (card === firstCard) return;
-  flipCard(card);
-  if (!firstCard) {
-    firstCard = card;
-  } else {
-    secondCard = card;
-    checkForMatch();
+function flashButton(color) {
+  const btn = document.querySelector(`[data-color="${color}"]`);
+  btn.classList.add('active');
+  setTimeout(() => btn.classList.remove('active'), 300);
+}
+
+colorButtons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    const color = btn.dataset.color;
+    userSequence.push(color);
+    flashButton(color);
+    checkInput(userSequence.length - 1);
+  });
+});
+
+function checkInput(idx) {
+  if (userSequence[idx] !== sequence[idx]) {
+    gameOver();
+    return;
+  }
+  if (userSequence.length === sequence.length) {
+    setTimeout(nextRound, 800);
   }
 }
 
-function flipCard(card) {
-  card.innerText = card.dataset.value;
-  card.classList.add('flipped');
+function gameOver() {
+  messageEl.textContent     = 'Nice try — enjoy your stay!';
+  gameArea.style.display    = 'none';
+  startButton.textContent   = 'Volver a jugar';
+  startButton.style.display = 'inline-block';
 }
 
-function checkForMatch() {
-  const isMatch = firstCard.dataset.value === secondCard.dataset.value;
-  if (isMatch) {
-    firstCard.classList.add('matched');
-    secondCard.classList.add('matched');
-    firstCard.removeEventListener('click', onCardClick);
-    secondCard.removeEventListener('click', onCardClick);
-    matchesFound++;
-    if (matchesFound === totalPairs) {
-      resetMemoramaBtn.style.display = 'inline-block';
-    }
-    resetState();
-  } else {
-    lockBoard = true;
-    setTimeout(() => {
-      firstCard.innerText = '';
-      secondCard.innerText = '';
-      firstCard.classList.remove('flipped');
-      secondCard.classList.remove('flipped');
-      resetState();
-    }, 1000);
-  }
-}
-
-function resetState() {
-  [firstCard, secondCard] = [null, null];
-  lockBoard = false;
-}
-
-function shuffle(array) {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-}
-
-resetMemoramaBtn.addEventListener('click', initMemorama);
-
-// Carga de datos y lógica de visualización
+// Carga JSON y lógica de visualización
 window.addEventListener('DOMContentLoaded', async () => {
   try {
     const [tResp, tmResp] = await Promise.all([
@@ -121,36 +83,141 @@ window.addEventListener('DOMContentLoaded', async () => {
       fetch('data_2.json')
     ]);
     const tData = await tResp.json();
-    const tmData = await tmResp.json();
+    const tmData= await tmResp.json();
     todaysRecords    = tData.template.content || [];
     tomorrowsRecords = tmData.template.content || [];
 
     if (todaysRecords.length === 0 && tomorrowsRecords.length === 0) {
-      homeContainer.style.display   = 'none';
-      searchContainer.style.display = 'none';
-      memoramaContainer.style.display = 'block';
-      initMemorama();
+      document.getElementById('home-container'   ).style.display = 'none';
+      document.getElementById('search-container' ).style.display = 'none';
+      simonContainer.style.display                                = 'block';
       return;
     }
 
-    memoramaContainer.style.display = 'none';
-    homeContainer.style.display     = 'block';
+    simonContainer.style.display      = 'none';
+    document.getElementById('home-container').style.display = 'block';
     currentDataset = 'today';
-    totalPages = Math.ceil(todaysRecords.length / itemsPerPage);
+    totalPages     = Math.ceil(todaysRecords.length / itemsPerPage);
     updateTitle();
     renderTable();
 
-  } catch (error) {
-    console.error('Error al cargar los datos:', error);
+  } catch (err) {
+    console.error(err);
   }
 });
 
-// — Resto del código de paginación y búsqueda sin cambios —
-function updateTitle() { /* … */ }
-function renderTable() { /* … */ }
-function startAutoPagination() { /* … */ }
+// Funciones de tabla y búsqueda
+function updateTitle() {
+  const mainTitle = document.getElementById('main-title');
+  mainTitle.innerText = (currentDataset === 'today')
+    ? "Today’s pick-up airport transfers"
+    : "Tomorrow’s pick-up airport transfers";
+}
+
+function renderTable() {
+  if (autoPageInterval) {
+    clearInterval(autoPageInterval);
+    autoPageInterval = null;
+  }
+  const currentRecords = (currentDataset === 'today')
+    ? todaysRecords
+    : tomorrowsRecords;
+  totalPages = Math.ceil(currentRecords.length / itemsPerPage);
+  const startIdx = (currentPage - 1) * itemsPerPage;
+  const slice   = currentRecords.slice(startIdx, startIdx + itemsPerPage);
+
+  let html = `<table><thead><tr>
+    <th>Booking No.</th><th>Flight No.</th>
+    <th>Hotel</th><th>Pick-Up time</th>
+  </tr></thead><tbody>`;
+  slice.forEach(item => {
+    html += `<tr>
+      <td>${item.id}</td>
+      <td>${item.Flight}</td>
+      <td>${item.HotelName}</td>
+      <td>${item.Time}</td>
+    </tr>`;
+  });
+  html += `</tbody></table>`;
+  if (totalPages > 1) {
+    html += `<div class="auto-page-info">Page ${currentPage} of ${totalPages}</div>`;
+  }
+  document.getElementById('table-container').innerHTML = html;
+  if (totalPages > 1) startAutoPagination();
+}
+
+function startAutoPagination() {
+  autoPageInterval = setInterval(() => {
+    currentPage++;
+    if (currentPage > totalPages) {
+      currentDataset = (currentDataset === 'today') ? 'tomorrow' : 'today';
+      currentPage    = 1;
+      updateTitle();
+    }
+    renderTable();
+  }, 10000);
+}
+
+const searchTransferBtn = document.getElementById('search-transfer-btn');
+const adventureBtn      = document.getElementById('adventure-btn');
+const backHomeBtn       = document.getElementById('back-home-btn');
+const searchInput       = document.getElementById('search-input');
+const searchButton      = document.getElementById('search-button');
+const searchLegend      = document.getElementById('search-legend');
+const searchResult      = document.getElementById('search-result');
+
 searchTransferBtn.addEventListener('click', goToSearch);
-backHomeBtn.addEventListener('click', goToHome);
-searchButton.addEventListener('click', () => { /* … */ });
-function goToSearch() { /* … */ }
-function goToHome() { /* … */ }
+adventureBtn     .addEventListener('click', () => alert('Implement logic'));
+backHomeBtn      .addEventListener('click',    goToHome);
+
+function goToSearch() {
+  document.getElementById('home-container'  ).style.display = 'none';
+  document.getElementById('search-container').style.display = 'block';
+  searchLegend.style.display = 'block';
+  searchResult.innerHTML     = '';
+  if (autoPageInterval) clearInterval(autoPageInterval);
+  if (inactivityTimer ) clearTimeout(inactivityTimer );
+}
+
+function goToHome() {
+  document.getElementById('search-container').style.display = 'none';
+  document.getElementById('home-container'  ).style.display = 'block';
+  currentPage = 1;
+  renderTable();
+}
+
+searchButton.addEventListener('click', () => {
+  if (inactivityTimer) clearTimeout(inactivityTimer);
+  searchLegend.style.display = 'none';
+  const q = searchInput.value.trim().toLowerCase();
+  if (!q) { goToHome(); return; }
+  let rec = todaysRecords.find(i => i.id.toLowerCase() === q)
+         || tomorrowsRecords.find(i => i.id.toLowerCase() === q);
+  inactivityTimer = setTimeout(goToHome, 20000);
+  if (rec) {
+    searchResult.innerHTML = `<p><strong>We got you, here is your transfer</strong></p>
+      <table class="transfer-result-table">
+        <thead><tr>
+          <th>Booking No.</th><th>Flight No.</th>
+          <th>Hotel</th><th>Pick-Up time</th>
+        </tr></thead>
+        <tbody>
+          <tr>
+            <td>${rec.id}</td>
+            <td>${rec.Flight}</td>
+            <td>${rec.HotelName}</td>
+            <td>${rec.Time}</td>
+          </tr>
+        </tbody>
+      </table>`;
+  } else {
+    searchResult.innerHTML = `<p class="error-text">
+      If you have any questions about your pickup transfer time,<br>
+      please reach out to your Royalton Excursion Rep at the hospitality desk.<br>
+      You can also chat on the NexusTours App or call +52 998 251 6559.
+    </p>
+    <div class="qr-container">
+      <img src="https://miguelgrhub.github.io/Dyspl/Qr.jpeg" alt="QR Code">
+    </div>`;
+  }
+});
