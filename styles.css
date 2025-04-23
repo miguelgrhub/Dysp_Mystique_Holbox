@@ -1,4 +1,3 @@
-/* styles.css */
 /* Reset básico */
 * {
   box-sizing: border-box;
@@ -6,33 +5,59 @@
   padding: 0;
 }
 
-/* BODY GLOBAL */
 body {
   font-family: "DM Sans", sans-serif;
-  background-color: #f7f7f7; /* Fondo claro */
+  background-color: #f7f7f7;
   color: #333;
   min-height: 100vh;
   padding: 20px;
 }
 
-/* ================= Mensaje vacío ================= */
-#empty-container {
+/* MEMORAMA */
+#memorama-container {
   display: none;
   text-align: center;
-  margin-top: 100px;
+  margin-top: 50px;
 }
-#empty-container .arrow {
-  font-size: 3rem;
-  margin-bottom: 0.5rem;
-  animation: bounce 1s infinite alternate;
+#memorama-container h2 {
+  color: #F17121;
+  margin-bottom: 10px;
 }
-#empty-container p {
-  font-size: 1.2rem;
-  color: #444;
+.memorama-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 15px;
+  max-width: 500px;
+  margin: 20px auto;
 }
-@keyframes bounce {
-  from { transform: translateY(0); }
-  to   { transform: translateY(-10px); }
+.card {
+  background: #ccc;
+  border-radius: 8px;
+  height: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2rem;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.3s;
+}
+.card.flipped {
+  background: #fff;
+}
+.card.matched {
+  visibility: hidden;
+}
+#reset-memorama {
+  display: none;
+  margin-top: 20px;
+  padding: 8px 12px;
+  font-size: 1rem;
+  background-color: #F17121;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
 }
 
 /* ENCABEZADO HOME y título principal */
@@ -53,17 +78,16 @@ body {
 
 /* Botón grande en Home */
 .big-home-button {
-  width: 96.5%;   /* Un poco menos ancho que antes */
-  height: 120px;  /* 120px de alto */
-  font-size: 1.5rem; /* Texto tamaño 1.5rem */
+  width: 96.5%;
+  height: 120px;
+  font-size: 1.5rem;
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 0 auto; /* Centrado horizontal */
+  margin: 0 auto;
 }
-
 .big-home-button .icon {
-  font-size: 1.6rem; /* Ícono de 1.6rem */
+  font-size: 1.6rem;
 }
 
 /* Botones base */
@@ -78,12 +102,10 @@ body {
   align-items: center;
   gap: 5px;
 }
-
 .btn-primary {
-  background-color: #F17121; /* Naranja */
+  background-color: #F17121;
   color: #fff;
 }
-
 .btn-secondary {
   background-color: #eee;
   color: #333;
@@ -108,7 +130,7 @@ footer {
   background: #FFF;
   margin: 0 auto;
   max-width: 944px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 /* Estilo de la tabla */
@@ -116,7 +138,6 @@ footer {
   width: 100%;
   border-collapse: collapse;
 }
-
 .table-container th,
 .table-container td {
   padding: 12px;
@@ -124,10 +145,9 @@ footer {
   border-bottom: 1px solid #ccc;
   font-size: 1rem;
 }
-
 .table-container th {
   background-color: #f9f9f9;
-  color: #F17121; /* Naranja */
+  color: #F17121;
   font-weight: bold;
 }
 
@@ -139,18 +159,14 @@ footer {
   font-size: 0.85rem;
 }
 
-/* CONTENEDOR HOME vs. SEARCH */
-#search-container {
-  display: none;
-}
-
+/* SEARCH */
+#search-container { display: none; }
 .search-container {
   max-width: 600px;
   margin: 0 auto;
   position: relative;
   text-align: center;
 }
-
 .btn-back {
   position: absolute;
   top: 0;
@@ -164,21 +180,17 @@ footer {
   cursor: pointer;
   font-size: 0.9rem;
 }
-
 .search-container h2 {
   text-align: center;
   margin-bottom: 20px;
   color: #F17121;
 }
-
-/* Caja de búsqueda en SEARCH */
 .search-box {
   display: inline-flex;
   justify-content: center;
   gap: 10px;
   margin-bottom: 10px;
 }
-
 .search-box input {
   padding: 10px;
   font-size: 0.9rem;
@@ -186,8 +198,6 @@ footer {
   border: 1px solid #ccc;
   width: 220px;
 }
-
-/* Botón de búsqueda en SEARCH (normal) */
 .btn-search {
   background-color: #F17121;
   color: #fff;
@@ -200,8 +210,6 @@ footer {
   align-items: center;
   gap: 5px;
 }
-
-/* Leyenda debajo del botón */
 .search-legend {
   font-size: 0.9rem;
   color: #666;
@@ -210,20 +218,15 @@ footer {
   margin: 10px auto;
   line-height: 1.4;
 }
-
-/* Resultado de la búsqueda */
 .search-result {
   text-align: center;
   margin-top: 20px;
   min-height: 50px;
 }
-
-/* Texto de error en negro */
 .error-text {
   color: #000;
   font-weight: normal;
 }
-
 .transfer-result-table th,
 .transfer-result-table td {
   padding: 12px;
@@ -231,34 +234,22 @@ footer {
   border-bottom: 1px solid #ccc;
   font-size: 0.9rem;
 }
-
 .transfer-result-table th {
   background-color: #f9f9f9;
   color: #F17121;
   font-weight: bold;
 }
-
-/* Ícono genérico */
-.icon {
-  font-size: 1.6rem;
-}
-
-.hide {
-  display: none !important;
-}
-
-/* QR container para error */
+.icon { font-size: 1.6rem; }
+.hide { display: none !important; }
 .qr-container {
   text-align: center;
   margin-top: 20px;
 }
-
 .qr-container img {
   max-width: 400px;
   width: 100%;
   height: auto;
 }
-
 .logo_nexus_bdr {
   width: 90%;
   max-width: 944px;
