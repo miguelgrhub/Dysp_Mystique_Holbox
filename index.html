@@ -1,4 +1,3 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,16 +11,17 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <!-- Mensaje vacío -->
-  <div id="empty-container">
-    <div class="arrow">↑</div>
-    <p>Nothing scheduled right now—perfect time to book your next adventure!</p>
+  <!-- MEMORAMA -->
+  <div id="memorama-container">
+    <h2>🎴 Memorama</h2>
+    <p>Encuentra las parejas. ¡Memoriza y gana!</p>
+    <div id="memorama-grid" class="memorama-grid"></div>
+    <button id="reset-memorama">Volver a jugar</button>
   </div>
 
   <!-- CONTENEDOR HOME: Tabla con todos los registros -->
   <div id="home-container" class="home-container">
     <div class="top-buttons">
-      <!-- Botón grande: 920px de ancho x 120px de alto -->
       <button id="search-transfer-btn" class="btn-secondary big-home-button">
         <span class="icon">🔎</span> Search my booking number
       </button>
@@ -30,10 +30,7 @@
       </button>
     </div>
 
-    <!-- Título en Home -->
     <h2 id="main-title" class="main-title">Today’s pick-up airport transfers</h2>
-
-    <!-- Aquí se inyecta la tabla y la paginación (auto) vía JavaScript -->
     <div id="table-container" class="table-container"></div>
 
     <footer>
@@ -45,26 +42,16 @@
   <div id="search-container" class="search-container">
     <button id="back-home-btn" class="btn-back">← Back</button>
     <h2>Find my transfer</h2>
-
     <div class="search-box">
-      <input
-        type="text"
-        id="search-input"
-        placeholder="Enter your booking number"
-        aria-label="Search by booking number"
-      />
-      <!-- Botón de búsqueda tamaño normal -->
+      <input type="text" id="search-input" placeholder="Enter your booking number" aria-label="Search by booking number" />
       <button id="search-button" class="btn-search">
         <span class="icon">🔍</span>
       </button>
     </div>
-
-    <!-- Leyenda debajo del botón (visible al inicio) -->
     <p id="search-legend" class="search-legend">
-      If you have any questions about your pickup transfer time, please reach out to your Royalton Excursion Rep at the hospitality desk. You can also contact us easily via chat on the NexusTours App or by calling +52 998 251 6559
-      We're here to assist you!
+      If you have any questions about your pickup transfer time, please reach out to your Royalton Excursion Rep at the hospitality desk.<br>
+      You can also chat on the NexusTours App or call +52 998 251 6559.
     </p>
-
     <div id="search-result" class="table-container result"></div>
   </div>
 
