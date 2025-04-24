@@ -1,4 +1,4 @@
-// Variables globales
+// ================= GLOBALS =================
 let todaysRecords    = [];
 let tomorrowsRecords = [];
 let currentDataset   = "today";
@@ -8,96 +8,25 @@ let totalPages       = 1;
 let autoPageInterval = null;
 let inactivityTimer  = null;
 
-// Plane Runner refs
-const runnerContainer = document.getElementById('runner-container');
-const startBtn        = document.getElementById('start-button');
-const canvas          = document.getElementById('runnerCanvas');
-const ctx             = canvas.getContext('2d');
-const runnerMsg       = document.getElementById('runner-message');
+// DOM REFERENCES
+const memoryContainer  = document.getElementById('memory-container');
+const startMemoryBtn   = document.getElementById('start-memory');
+const memoryBoard      = document.getElementById('memory-board');
+const memoryMsg        = document.getElementById('memory-msg');
 
-// Runner state
-let planeY    = 150;
-let planeV    = 0;
-const gravity = 0.6;
-const jumpV   = -10;
-let obstacles = [];
-let frame     = 0;
-let score     = 0;
-let gameLoop;
+const homeContainer    = document.getElementById('home-container');
+const searchContainer  = document.getElementById('search-container');
+const tableContainer   = document.getElementById('table-container');
+const searchTransferBtn= document.getElementById('search-transfer-btn');
+const adventureBtn     = document.getElementById('adventure-btn');
+const backHomeBtn      = document.getElementById('back-home-btn');
+const searchInput      = document.getElementById('search-input');
+const searchButton     = document.getElementById('search-button');
+const searchLegend     = document.getElementById('search-legend');
+const searchResult     = document.getElementById('search-result');
+const mainTitle        = document.getElementById('main-title');
 
-// Dibuja escena
-function drawRunner() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  // suelo
-  ctx.fillStyle = '#555';
-  ctx.fillRect(0, canvas.height - 20, canvas.width, 20);
-  // avioncito
-  ctx.fillStyle = '#F17121';
-  ctx.beginPath();
-  ctx.moveTo(50, planeY);
-  ctx.lineTo(30, planeY + 15);
-  ctx.lineTo(30, planeY - 15);
-  ctx.closePath();
-  ctx.fill();
-  // obstáculos
-  ctx.fillStyle = '#333';
-  obstacles.forEach(o => ctx.fillRect(o.x, canvas.height - 40, 20, 20));
-  // puntaje
-  ctx.fillStyle = '#000';
-  ctx.font = '16px Arial';
-  ctx.fillText('Score: ' + score, 10, 20);
-}
-
-// Lógica loop con dificultad dinámica
-function updateRunner() {
-  planeV += gravity;
-  planeY += planeV;
-  if (planeY > canvas.height - 50) planeY = canvas.height - 50, planeV = 0;
-
-  // Spawn rate baja con puntaje (más obstáculos)
-  const spawnRate = Math.max(30, 90 - score * 2);
-  if (frame % spawnRate === 0) obstacles.push({ x: canvas.width });
-
-  // Velocidad sube con puntaje
-  const speed = 6 + score * 0.1;
-  obstacles.forEach(o => { o.x -= speed; if (o.x + 20 < 0) score++; });
-  obstacles = obstacles.filter(o => o.x > -20);
-
-  // Colisión
-  obstacles.forEach(o => {
-    if (50 > o.x && 50 < o.x + 20 && planeY > canvas.height - 60) {
-      stopRunner();
-    }
-  });
-
-  drawRunner();
-  frame++;
-}
-
-// Iniciar/detener
-function startRunner() {
-  obstacles = [];
-  frame     = 0;
-  score     = 0;
-  planeY    = 150;
-  planeV    = 0;
-  runnerMsg.textContent = '';
-  startBtn.style.display = 'none';
-  gameLoop = setInterval(updateRunner, 1000 / 60);
-}
-function stopRunner() {
-  clearInterval(gameLoop);
-  runnerMsg.textContent  = 'Nice try — enjoy your stay!';
-  startBtn.textContent   = 'Volver a jugar';
-  startBtn.style.display = 'inline-block';
-}
-
-// Eventos
-startBtn.addEventListener('click', startRunner);
-canvas.addEventListener('click', () => planeV = jumpV);
-document.addEventListener('keydown', e => { if (e.key === ' ') planeV = jumpV; });
-
-// Carga JSON y decide qué mostrar
+// ================= INITIALIZE =================
 window.addEventListener('DOMContentLoaded', async () => {
   try {
     const [tResp, tmResp] = await Promise.all([
@@ -110,53 +39,131 @@ window.addEventListener('DOMContentLoaded', async () => {
     tomorrowsRecords = tmData.template.content || [];
 
     if (todaysRecords.length === 0 && tomorrowsRecords.length === 0) {
-      document.getElementById('home-container').style.display   = 'none';
-      document.getElementById('search-container').style.display = 'none';
-      runnerContainer.style.display                            = 'block';
+      // SHOW MEMORY GAME
+      homeContainer.style.display   = 'none';
+      searchContainer.style.display = 'none';
+      memoryContainer.style.display = 'block';
+      initMemoryGame();
     } else {
-      runnerContainer.style.display         = 'none';
-      document.getElementById('home-container').style.display   = 'block';
-      currentDataset = 'today';
-      totalPages     = Math.ceil(todaysRecords.length / itemsPerPage);
-      updateTitle();
-      renderTable();
+      // SHOW TRANSFERS UI
+      memoryContainer.style.display = 'none';
+      homeContainer.style.display   = 'block';
+      initTransfers();
     }
   } catch (err) {
     console.error(err);
   }
 });
 
-// TABLA & SEARCH (tu código original)
+// ================= MEMORY GAME =================
+function initMemoryGame() {
+  const emojis = ['🏖️','🌊','🌞','🏝️','🐚','🦀','🌴','🐠'];
+  let deck = [...emojis, ...emojis];
+  shuffle(deck);
+  memoryBoard.innerHTML = '';
+  let first = null, second = null, lock = false, matched = 0;
+
+  deck.forEach(emoji => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.dataset.emoji = emoji;
+    card.addEventListener('click', () => {
+      if (lock || card === first || card.classList.contains('matched')) return;
+      card.textContent = emoji;
+      card.classList.add('flipped');
+      if (!first) {
+        first = card;
+      } else {
+        second = card;
+        lock = true;
+        if (first.dataset.emoji === second.dataset.emoji) {
+          first.classList.add('matched');
+          second.classList.add('matched');
+          matched += 2;
+          resetTurn();
+          if (matched === deck.length) endMemoryGame();
+        } else {
+          setTimeout(() => {
+            first.textContent = '';
+            second.textContent = '';
+            first.classList.remove('flipped');
+            second.classList.remove('flipped');
+            resetTurn();
+          }, 1000);
+        }
+      }
+    });
+    memoryBoard.appendChild(card);
+  });
+
+  startMemoryBtn.style.display = 'none';
+}
+
+function resetTurn() {
+  [first, second, lock] = [null, null, false];
+}
+
+function endMemoryGame() {
+  memoryMsg.textContent = '¡Buen trabajo! Disfruta tu estancia.';
+  startMemoryBtn.style.display = 'inline-block';
+}
+
+function shuffle(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
+
+// ================= TRANSFERS UI =================
+function initTransfers() {
+  // initial render
+  currentDataset = 'today';
+  totalPages     = Math.ceil(todaysRecords.length / itemsPerPage);
+  updateTitle();
+  renderTable();
+
+  // setup navigation & search
+  searchTransferBtn.addEventListener('click', goToSearch);
+  adventureBtn.addEventListener('click', () => alert('Implement your adventure logic'));
+  backHomeBtn.addEventListener('click', goToHome);
+  searchButton.addEventListener('click', handleSearch);
+}
+
 function updateTitle() {
-  const mainTitle = document.getElementById('main-title');
   mainTitle.innerText = (currentDataset === 'today')
     ? "Today’s pick-up airport transfers"
     : "Tomorrow’s pick-up airport transfers";
 }
 
 function renderTable() {
-  if (autoPageInterval) clearInterval(autoPageInterval);
-  const records = currentDataset === 'today' ? todaysRecords : tomorrowsRecords;
-  totalPages     = Math.ceil(records.length / itemsPerPage);
+  clearInterval(autoPageInterval);
+  let records = currentDataset === 'today'
+    ? todaysRecords
+    : tomorrowsRecords;
+  totalPages = Math.ceil(records.length / itemsPerPage);
   const startIdx = (currentPage - 1) * itemsPerPage;
   const pageRec  = records.slice(startIdx, startIdx + itemsPerPage);
 
-  let html = `<table><thead><tr>
-    <th>Booking No.</th><th>Flight No.</th>
-    <th>Hotel</th><th>Pick-Up time</th>
-  </tr></thead><tbody>`;
+  let html = `<table>
+    <thead>
+      <tr><th>Booking No.</th><th>Flight No.</th><th>Hotel</th><th>Pick-Up time</th></tr>
+    </thead>
+    <tbody>`;
   pageRec.forEach(i => {
     html += `<tr>
-      <td>${i.id}</td><td>${i.Flight}</td>
-      <td>${i.HotelName}</td><td>${i.Time}</td>
+      <td>${i.id}</td>
+      <td>${i.Flight}</td>
+      <td>${i.HotelName}</td>
+      <td>${i.Time}</td>
     </tr>`;
   });
   html += `</tbody></table>`;
   if (totalPages > 1) {
     html += `<div class="auto-page-info">Page ${currentPage} of ${totalPages}</div>`;
+    startAutoPagination();
   }
-  document.getElementById('table-container').innerHTML = html;
-  if (totalPages > 1) startAutoPagination();
+  tableContainer.innerHTML = html;
 }
 
 function startAutoPagination() {
@@ -164,68 +171,59 @@ function startAutoPagination() {
     currentPage++;
     if (currentPage > totalPages) {
       currentDataset = currentDataset === 'today' ? 'tomorrow' : 'today';
-      currentPage    = 1;
+      currentPage = 1;
       updateTitle();
     }
     renderTable();
   }, 10000);
 }
 
-const searchTransferBtn = document.getElementById('search-transfer-btn');
-const adventureBtn      = document.getElementById('adventure-btn');
-const backHomeBtn       = document.getElementById('back-home-btn');
-const searchInput       = document.getElementById('search-input');
-const searchButton      = document.getElementById('search-button');
-const searchLegend      = document.getElementById('search-legend');
-const searchResult      = document.getElementById('search-result');
-
-searchTransferBtn.addEventListener('click', goToSearch);
-adventureBtn.addEventListener('click', () => alert('Implement logic'));
-backHomeBtn.addEventListener('click', goToHome);
-
 function goToSearch() {
-  document.getElementById('home-container').style.display   = 'none';
-  document.getElementById('search-container').style.display = 'block';
-  searchLegend.style.display = 'block';
-  searchResult.innerHTML     = '';
-  if (autoPageInterval) clearInterval(autoPageInterval);
-  if (inactivityTimer) clearTimeout(inactivityTimer);
+  homeContainer.style.display   = 'none';
+  searchContainer.style.display = 'block';
+  searchLegend.style.display    = 'block';
 }
 
 function goToHome() {
-  document.getElementById('search-container').style.display = 'none';
-  document.getElementById('home-container').style.display   = 'block';
+  searchContainer.style.display = 'none';
+  homeContainer.style.display   = 'block';
   currentPage = 1;
   renderTable();
 }
 
-searchButton.addEventListener('click', () => {
-  if (inactivityTimer) clearTimeout(inactivityTimer);
+function handleSearch() {
+  clearTimeout(inactivityTimer);
   searchLegend.style.display = 'none';
   const q = searchInput.value.trim().toLowerCase();
-  if (!q) { goToHome(); return; }
+  if (!q) { return goToHome(); }
   let rec = todaysRecords.find(i => i.id.toLowerCase() === q)
          || tomorrowsRecords.find(i => i.id.toLowerCase() === q);
   inactivityTimer = setTimeout(goToHome, 20000);
   if (rec) {
-    searchResult.innerHTML = `<p><strong>We got you, here is your transfer</strong></p>
+    searchResult.innerHTML = `
+      <p><strong>We got you, here is your transfer</strong></p>
       <table class="transfer-result-table">
-        <thead><tr>
-          <th>Booking No.</th><th>Flight No.</th><th>Hotel</th><th>Pick-Up time</th>
-        </tr></thead><tbody>
+        <thead>
+          <tr><th>Booking No.</th><th>Flight No.</th><th>Hotel</th><th>Pick-Up time</th></tr>
+        </thead>
+        <tbody>
           <tr>
-            <td>${rec.id}</td><td>${rec.Flight}</td><td>${rec.HotelName}</td><td>${rec.Time}</td>
+            <td>${rec.id}</td>
+            <td>${rec.Flight}</td>
+            <td>${rec.HotelName}</td>
+            <td>${rec.Time}</td>
           </tr>
         </tbody>
       </table>`;
   } else {
-    searchResult.innerHTML = `<p class="error-text">
-      If you have any questions about your pickup transfer time,<br>
-      please reach out to your Royalton Excursion Rep at the hospitality desk.<br>
-      You can also chat on the NexusTours App or call +52 998 251 6559.
-    </p>
-    <div class="qr-container">
-      <img src="https://miguelgrhub.github.io/Dyspl/Qr.jpeg" alt="QR Code">
-    </div>`;
+    searchResult.innerHTML = `
+      <p class="error-text">
+        If you have any questions about your pickup transfer time,<br>
+        please reach out to your Royalton Excursion Rep at the hospitality desk.<br>
+        You can also chat on the NexusTours App or call +52 998 251 6559.
+      </p>
+      <div class="qr-container">
+        <img src="https://miguelgrhub.github.io/Dyspl/Qr.jpeg" alt="QR Code">
+      </div>`;
   }
-});
+}
