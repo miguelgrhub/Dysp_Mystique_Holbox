@@ -89,9 +89,14 @@ function initMemoryGame() {
     card.className = 'card';
     card.dataset.url = url;
     card.innerHTML = `
-      <div class="face">❓</div>
-      <div class="back"><img src="${url}" alt=""/></div>
-    `;
+  <div class="face">
+    <img src="https://raw.githubusercontent.com/tu_usuario/tu_repo/main/assets/card-back.png" alt="Card Back"/>
+  </div>
+  <div class="back">
+    <img src="${url}" alt="Card Front"/>
+  </div>
+`;
+
     card.onclick = () => {
       if (memLock || card === memFirst || card.classList.contains('matched')) return;
       card.classList.add('flipped');
