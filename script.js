@@ -45,11 +45,9 @@ window.addEventListener('DOMContentLoaded', async () => {
     tomorrowsRecords = tmData.template.content || [];
 
     if (todaysRecords.length === 0 && tomorrowsRecords.length === 0) {
-      // show memorama UI
       homeContainer.style.display   = 'none';
       searchContainer.style.display = 'none';
       memoryContainer.style.display = 'flex';
-      // only show start button initially
       startMemoryBtn.style.display  = 'inline-block';
       memoryBoard.style.display     = 'none';
       startMemoryBtn.onclick        = initMemoryGame;
@@ -65,13 +63,12 @@ window.addEventListener('DOMContentLoaded', async () => {
 
 // ============== MEMORY GAME ==============
 function initMemoryGame() {
-  // reset
   memFirst = memSecond = null;
   memLock = false;
   memMatched = 0;
   memoryMsg.textContent = '';
 
-  // prepare board
+  // build deck
   const emojis = ['🏖️','🌊','🌞','🏝️','🐚','🦀','🌴','🐠'];
   let deck = [...emojis, ...emojis];
   shuffle(deck);
@@ -101,7 +98,10 @@ function initMemoryGame() {
             memLock = false;
           }, 500);
           memMatched += 2;
-          if (memMatched === deck.length) endMemoryGame();
+          if (memMatched === deck.length) {
+            confetti({ particleCount: 200, spread: 60 });
+            endMemoryGame();
+          }
         } else {
           memFirst.classList.add('wrong');
           memSecond.classList.add('wrong');
@@ -117,7 +117,6 @@ function initMemoryGame() {
     memoryBoard.appendChild(card);
   });
 
-  // show board, hide button
   startMemoryBtn.style.display = 'none';
   memoryBoard.style.display    = 'grid';
 }
