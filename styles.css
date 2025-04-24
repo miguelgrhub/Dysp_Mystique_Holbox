@@ -174,3 +174,9 @@ body {
 .logo_nexus_bdr {
   width: 90%; max-width: 944px;
 }
+.card .face img,
+.card .back img {
+  max-width: 70px;
+  max-height: 70px;
+}
+
