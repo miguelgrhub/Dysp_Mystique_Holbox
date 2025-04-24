@@ -34,14 +34,14 @@ const mainTitle         = document.getElementById('main-title');
 
 // ← AQUI: reemplaza con tus URLs raw.githubusercontent.com
 const images = [
-  'https://raw.githubusercontent.com/tu_usuario/tu_repo/main/assets/image1.png',
-  'https://raw.githubusercontent.com/tu_usuario/tu_repo/main/assets/image2.png',
-  'https://raw.githubusercontent.com/tu_usuario/tu_repo/main/assets/image3.png',
-  'https://raw.githubusercontent.com/tu_usuario/tu_repo/main/assets/image4.png',
-  'https://raw.githubusercontent.com/tu_usuario/tu_repo/main/assets/image5.png',
-  'https://raw.githubusercontent.com/tu_usuario/tu_repo/main/assets/image6.png',
-  'https://raw.githubusercontent.com/tu_usuario/tu_repo/main/assets/image7.png',
-  'https://raw.githubusercontent.com/tu_usuario/tu_repo/main/assets/image8.png'
+  'https://miguelgrhub.github.io/Dysp_Mystique_Holbox/image1.png',
+  'https://miguelgrhub.github.io/Dysp_Mystique_Holbox/image2.png',
+  'https://miguelgrhub.github.io/Dysp_Mystique_Holbox/image3.png',
+  'https://miguelgrhub.github.io/Dysp_Mystique_Holbox/image4.png',
+  'https://miguelgrhub.github.io/Dysp_Mystique_Holbox/image5.png',
+  'https://miguelgrhub.github.io/Dysp_Mystique_Holbox/image6.png',
+  'https://miguelgrhub.github.io/Dysp_Mystique_Holbox/image7.png',
+  'https://miguelgrhub.github.io/Dysp_Mystique_Holbox/image8.png'
 ];
 
 // ================ INITIALIZE ================
