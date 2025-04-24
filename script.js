@@ -57,7 +57,10 @@ window.addEventListener('DOMContentLoaded', async () => {
     todaysRecords    = todayData.template.content || [];
     tomorrowsRecords = tomorrowData.template.content || [];
 
-    if (todaysRecords.length === 0 && tomorrowsRecords.length === 0) {
+    const hasToday    = todaysRecords.length > 0;
+    const hasTomorrow = tomorrowsRecords.length > 0;
+
+    if (!hasToday && !hasTomorrow) {
       // Ambos vacíos → memorama
       homeContainer.style.display   = 'none';
       searchContainer.style.display = 'none';
@@ -66,16 +69,13 @@ window.addEventListener('DOMContentLoaded', async () => {
       memoryBoard.style.display     = 'none';
       startMemoryBtn.onclick        = initMemoryGame;
     } else {
-      // Hay datos en hoy o mañana → transfers
+      // Hay datos en uno o ambos → transfers
       memoryContainer.style.display = 'none';
       homeContainer.style.display   = 'block';
+      searchContainer.style.display = 'none';
 
-      // Si hoy está vacío pero mañana tiene, arrancamos con tomorrow
-      if (todaysRecords.length > 0) {
-        currentDataset = 'today';
-      } else {
-        currentDataset = 'tomorrow';
-      }
+      // arrancar con today si tiene, si no con tomorrow
+      currentDataset = hasToday ? 'today' : 'tomorrow';
       currentPage = 1;
       initTransfers();
     }
@@ -101,52 +101,53 @@ function initMemoryGame() {
     card.dataset.url = url;
     card.innerHTML = `
       <div class="face">
-        <img src="https://raw.githubusercontent.com/tu_usuario/tu_repo/main/assets/card-back.png"
-             alt="Card Back"/>
+        <img src="https://raw.githubusercontent.com/tu_usuario/tu_repo/main/assets/card-back.png" alt="Card Back"/>
       </div>
       <div class="back">
         <img src="${url}" alt="Card Front"/>
       </div>
     `;
-    card.onclick = () => {
-      if (memLock || card === memFirst || card.classList.contains('matched')) return;
-      card.classList.add('flipped');
-      if (!memFirst) {
-        memFirst = card;
-      } else {
-        memSecond = card;
-        memLock = true;
-        if (memFirst.dataset.url === memSecond.dataset.url) {
-          memFirst.classList.add('correct','matched');
-          memSecond.classList.add('correct','matched');
-          setTimeout(() => {
-            memFirst.classList.remove('correct');
-            memSecond.classList.remove('correct');
-            memFirst = memSecond = null;
-            memLock = false;
-          }, 500);
-          memMatched += 2;
-          if (memMatched === deck.length) {
-            confetti({ particleCount: 200, spread: 60 });
-            endMemoryGame();
-          }
-        } else {
-          memFirst.classList.add('wrong');
-          memSecond.classList.add('wrong');
-          setTimeout(() => {
-            memFirst.classList.remove('wrong','flipped');
-            memSecond.classList.remove('wrong','flipped');
-            memFirst = memSecond = null;
-            memLock = false;
-          }, 800);
-        }
-      }
-    };
+    card.onclick = () => handleCardClick(card, deck.length);
     memoryBoard.appendChild(card);
   });
 
   startMemoryBtn.style.display = 'none';
   memoryBoard.style.display    = 'grid';
+}
+
+function handleCardClick(card, deckSize) {
+  if (memLock || card === memFirst || card.classList.contains('matched')) return;
+  card.classList.add('flipped');
+  if (!memFirst) {
+    memFirst = card;
+  } else {
+    memSecond = card;
+    memLock = true;
+    if (memFirst.dataset.url === memSecond.dataset.url) {
+      memFirst.classList.add('correct','matched');
+      memSecond.classList.add('correct','matched');
+      setTimeout(() => {
+        memFirst.classList.remove('correct');
+        memSecond.classList.remove('correct');
+        memFirst = memSecond = null;
+        memLock = false;
+      }, 500);
+      memMatched += 2;
+      if (memMatched === deckSize) {
+        confetti({ particleCount: 200, spread: 60 });
+        endMemoryGame();
+      }
+    } else {
+      memFirst.classList.add('wrong');
+      memSecond.classList.add('wrong');
+      setTimeout(() => {
+        memFirst.classList.remove('wrong','flipped');
+        memSecond.classList.remove('wrong','flipped');
+        memFirst = memSecond = null;
+        memLock = false;
+      }, 800);
+    }
+  }
 }
 
 function endMemoryGame() {
@@ -164,13 +165,8 @@ function shuffle(array) {
 
 // ============= TRANSFERS UI =============
 function initTransfers() {
-  totalPages = Math.ceil(
-    (currentDataset === 'today' ? todaysRecords : tomorrowsRecords).length
-    / itemsPerPage
-  );
   updateTitle();
   renderTable();
-
   searchTransferBtn.onclick = goToSearch;
   adventureBtn.onclick      = () => alert('Implement your adventure logic');
   backHomeBtn.onclick       = goToHome;
@@ -185,25 +181,46 @@ function updateTitle() {
 
 function renderTable() {
   clearInterval(autoPageInterval);
+  // Si el dataset actual está vacío, alterna solo si el otro tiene datos
+  const currArr = currentDataset === 'today' ? todaysRecords : tomorrowsRecords;
+  if (currArr.length === 0) {
+    const altArr = currentDataset === 'today' ? tomorrowsRecords : todaysRecords;
+    if (altArr.length > 0) {
+      currentDataset = currentDataset === 'today' ? 'tomorrow' : 'today';
+    }
+  }
+
   const records = currentDataset === 'today' ? todaysRecords : tomorrowsRecords;
-  totalPages = Math.ceil(records.length / itemsPerPage);
+  totalPages = Math.max(1, Math.ceil(records.length / itemsPerPage));
+  if (currentPage > totalPages) currentPage = 1;
+
   const startIdx = (currentPage - 1) * itemsPerPage;
   const pageRec  = records.slice(startIdx, startIdx + itemsPerPage);
 
   let html = `<table>
     <thead>
-      <tr><th>Booking No.</th><th>Flight No.</th><th>Hotel</th><th>Pick-Up time</th></tr>
+      <tr>
+        <th>Booking No.</th>
+        <th>Flight No.</th>
+        <th>Hotel</th>
+        <th>Pick-Up time</th>
+      </tr>
     </thead><tbody>`;
   pageRec.forEach(i => {
     html += `<tr>
-      <td>${i.id}</td><td>${i.Flight}</td><td>${i.HotelName}</td><td>${i.Time}</td>
+      <td>${i.id}</td>
+      <td>${i.Flight}</td>
+      <td>${i.HotelName}</td>
+      <td>${i.Time}</td>
     </tr>`;
   });
   html += `</tbody></table>`;
-  if (totalPages > 1) {
+
+  if (records.length > itemsPerPage) {
     html += `<div class="auto-page-info">Page ${currentPage} of ${totalPages}</div>`;
     startAutoPagination();
   }
+
   tableContainer.innerHTML = html;
 }
 
@@ -211,7 +228,10 @@ function startAutoPagination() {
   autoPageInterval = setInterval(() => {
     currentPage++;
     if (currentPage > totalPages) {
-      currentDataset = currentDataset === 'today' ? 'tomorrow' : 'today';
+      const altArr = currentDataset === 'today' ? tomorrowsRecords : todaysRecords;
+      if (altArr.length > 0) {
+        currentDataset = currentDataset === 'today' ? 'tomorrow' : 'today';
+      }
       currentPage = 1;
       updateTitle();
     }
@@ -237,19 +257,30 @@ function handleSearch() {
   searchLegend.style.display = 'none';
   const q = searchInput.value.trim().toLowerCase();
   if (!q) { goToHome(); return; }
+
   let rec = todaysRecords.find(i => i.id.toLowerCase() === q)
          || tomorrowsRecords.find(i => i.id.toLowerCase() === q);
+
   inactivityTimer = setTimeout(goToHome, 20000);
+
   if (rec) {
     searchResult.innerHTML = `
       <p><strong>We got you, here is your transfer</strong></p>
       <table class="transfer-result-table">
-        <thead><tr>
-          <th>Booking No.</th><th>Flight No.</th><th>Hotel</th><th>Pick-Up time</th>
-        </tr></thead>
+        <thead>
+          <tr>
+            <th>Booking No.</th>
+            <th>Flight No.</th>
+            <th>Hotel</th>
+            <th>Pick-Up time</th>
+          </tr>
+        </thead>
         <tbody>
           <tr>
-            <td>${rec.id}</td><td>${rec.Flight}</td><td>${rec.HotelName}</td><td>${rec.Time}</td>
+            <td>${rec.id}</td>
+            <td>${rec.Flight}</td>
+            <td>${rec.HotelName}</td>
+            <td>${rec.Time}</td>
           </tr>
         </tbody>
       </table>`;
