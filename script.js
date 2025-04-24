@@ -90,7 +90,7 @@ function initMemoryGame() {
     card.dataset.url = url;
     card.innerHTML = `
   <div class="face">
-    <img src="https://miguelgrhub.github.io/Dysp_Mystique_Holbox/NEXUS_MEMORAMA.jpeg" alt="Card Back"/>
+    <img src="https://miguelgrhub.github.io/Dysp_Mystique_Holbox/Mystique_memorama.png" alt="Card Back"/>
   </div>
   <div class="back">
     <img src="${url}" alt="Card Front"/>
