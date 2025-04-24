@@ -175,5 +175,5 @@ body {
   width: 90%; max-width: 944px;
 }
 .logos_footer {
-  margin: auto; display: flex;
+  justify-content: center; display: flex;
 }
