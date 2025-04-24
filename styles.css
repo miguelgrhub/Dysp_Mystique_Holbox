@@ -30,6 +30,7 @@ body {
 }
 .memory-board {
   display: none;
+  display: grid;
   grid-template-columns: repeat(4, 80px);
   grid-gap: 10px;
   perspective: 1000px;
@@ -62,7 +63,6 @@ body {
   background: #fff;
 }
 .card .face {
-  /* cara de atrás: por ejemplo un ícono de interrogación */
   font-size: 2rem;
 }
 .card .back {
@@ -84,4 +84,93 @@ body {
 }
 
 /* HOME & TABLE */
-/* ... (resto idéntico al anterior) ... */
+.home-container h2, .main-title {
+  text-align: center;
+  margin-bottom: 20px;
+}
+.top-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.big-home-button {
+  width: 96%; height: 100px;
+  font-size: 1.2rem;
+  display: flex; align-items: center; justify-content: center;
+}
+.btn-primary, .btn-secondary {
+  border: none; padding: 8px 12px; border-radius: 5px;
+  cursor: pointer; display: flex; align-items: center; gap: 5px;
+}
+.btn-primary { background: #F17121; color: #fff; }
+.btn-secondary { background: #eee; color: #333; }
+.table-container {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 26px; padding: 20px; border: 2px solid #D0DFDF;
+  border-radius: 20px; background: #FFF; margin: 0 auto;
+  max-width: 944px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+.table-container table {
+  width: 100%; border-collapse: collapse;
+}
+.table-container th, .table-container td {
+  padding: 12px; text-align: left; border-bottom: 1px solid #ccc;
+}
+.table-container th {
+  background: #f9f9f9; color: #F17121; font-weight: bold;
+}
+.auto-page-info {
+  text-align: center; color: #666; font-size: 0.85rem;
+}
+
+/* SEARCH */
+#search-container { display: none; }
+.search-container {
+  max-width: 600px; margin: 0 auto; position: relative;
+  text-align: center;
+}
+.btn-back {
+  position: absolute; top: 0; left: 0;
+  transform: translateY(-50%);
+  background: none; border: 2px solid #F17121;
+  color: #F17121; padding: 5px 10px; border-radius: 4px;
+  cursor: pointer; font-size: 0.9rem;
+}
+.search-box {
+  display: inline-flex; gap: 10px; margin-bottom: 10px;
+}
+.search-box input {
+  padding: 10px; border: 1px solid #ccc; border-radius: 4px;
+  width: 220px; font-size: 0.9rem;
+}
+.btn-search {
+  background: #F17121; color: #fff; border: none;
+  padding: 10px 14px; border-radius: 4px;
+  cursor: pointer; font-size: 0.9rem;
+}
+.search-legend {
+  font-size: 0.9rem; color: #666; text-align: center;
+  max-width: 500px; margin: 10px auto; line-height: 1.4;
+}
+.search-result {
+  margin-top: 20px; min-height: 50px; text-align: center;
+}
+.error-text { color: #000; }
+.transfer-result-table th, .transfer-result-table td {
+  padding: 12px; border-bottom: 1px solid #ccc;
+}
+.transfer-result-table th {
+  background: #f9f9f9; color: #F17121;
+}
+.icon { font-size: 1.6rem; }
+.hide { display: none!important; }
+.qr-container {
+  text-align: center; margin-top: 20px;
+}
+.qr-container img {
+  max-width: 400px; width: 100%; height: auto;
+}
+.logo_nexus_bdr {
+  width: 90%; max-width: 944px;
+}
