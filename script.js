@@ -8,6 +8,12 @@ let totalPages       = 1;
 let autoPageInterval = null;
 let inactivityTimer  = null;
 
+// MEMORIA state (fuera de init para no perder referencias)
+let memFirst   = null;
+let memSecond  = null;
+let memLock    = false;
+let memMatched = 0;
+
 // DOM REFS
 const memoryContainer   = document.getElementById('memory-container');
 const startMemoryBtn    = document.getElementById('start-memory');
@@ -44,6 +50,7 @@ window.addEventListener('DOMContentLoaded', async () => {
       searchContainer.style.display = 'none';
       memoryContainer.style.display = 'flex';
       initMemoryGame();
+      startMemoryBtn.addEventListener('click', initMemoryGame);
     } else {
       // Show transfers UI
       memoryContainer.style.display = 'none';
@@ -57,51 +64,56 @@ window.addEventListener('DOMContentLoaded', async () => {
 
 // ============== MEMORY GAME ==============
 function initMemoryGame() {
+  // Reset state
+  memFirst   = null;
+  memSecond  = null;
+  memLock    = false;
+  memMatched = 0;
   memoryMsg.textContent = '';
+  startMemoryBtn.style.display = 'none';
+
+  // Prepare deck
   const emojis = ['🏖️','🌊','🌞','🏝️','🐚','🦀','🌴','🐠'];
   let deck = [...emojis, ...emojis];
   shuffle(deck);
-  memoryBoard.innerHTML = '';
-  let first=null, second=null, lock=false, matched=0;
 
+  // Render board
+  memoryBoard.innerHTML = '';
   deck.forEach(emoji => {
     const card = document.createElement('div');
     card.className = 'card';
     card.dataset.emoji = emoji;
     card.addEventListener('click', () => {
-      if (lock || card === first || card.classList.contains('matched')) return;
+      if (memLock || card === memFirst || card.classList.contains('matched')) return;
       card.textContent = emoji;
       card.classList.add('flipped');
-      if (!first) {
-        first = card;
+      if (!memFirst) {
+        memFirst = card;
       } else {
-        second = card;
-        lock = true;
-        if (first.dataset.emoji === second.dataset.emoji) {
-          first.classList.add('matched');
-          second.classList.add('matched');
-          matched += 2;
-          resetTurn();
-          if (matched === deck.length) endMemoryGame();
+        memSecond = card;
+        memLock = true;
+        if (memFirst.dataset.emoji === memSecond.dataset.emoji) {
+          memFirst.classList.add('matched');
+          memSecond.classList.add('matched');
+          memMatched += 2;
+          // allow next picks immediately
+          memFirst = memSecond = null;
+          memLock = false;
+          if (memMatched === deck.length) endMemoryGame();
         } else {
           setTimeout(() => {
-            first.textContent = '';
-            second.textContent = '';
-            first.classList.remove('flipped');
-            second.classList.remove('flipped');
-            resetTurn();
+            memFirst.textContent = '';
+            memSecond.textContent = '';
+            memFirst.classList.remove('flipped');
+            memSecond.classList.remove('flipped');
+            memFirst = memSecond = null;
+            memLock = false;
           }, 1000);
         }
       }
     });
     memoryBoard.appendChild(card);
   });
-
-  startMemoryBtn.style.display = 'none';
-}
-
-function resetTurn() {
-  first = null; second = null; lock = false;
 }
 
 function endMemoryGame() {
