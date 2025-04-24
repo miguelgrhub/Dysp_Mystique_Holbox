@@ -8,25 +8,25 @@ let totalPages       = 1;
 let autoPageInterval = null;
 let inactivityTimer  = null;
 
-// DOM REFERENCES
-const memoryContainer  = document.getElementById('memory-container');
-const startMemoryBtn   = document.getElementById('start-memory');
-const memoryBoard      = document.getElementById('memory-board');
-const memoryMsg        = document.getElementById('memory-msg');
+// DOM REFS
+const memoryContainer   = document.getElementById('memory-container');
+const startMemoryBtn    = document.getElementById('start-memory');
+const memoryBoard       = document.getElementById('memory-board');
+const memoryMsg         = document.getElementById('memory-msg');
 
-const homeContainer    = document.getElementById('home-container');
-const searchContainer  = document.getElementById('search-container');
-const tableContainer   = document.getElementById('table-container');
-const searchTransferBtn= document.getElementById('search-transfer-btn');
-const adventureBtn     = document.getElementById('adventure-btn');
-const backHomeBtn      = document.getElementById('back-home-btn');
-const searchInput      = document.getElementById('search-input');
-const searchButton     = document.getElementById('search-button');
-const searchLegend     = document.getElementById('search-legend');
-const searchResult     = document.getElementById('search-result');
-const mainTitle        = document.getElementById('main-title');
+const homeContainer     = document.getElementById('home-container');
+const searchContainer   = document.getElementById('search-container');
+const tableContainer    = document.getElementById('table-container');
+const searchTransferBtn = document.getElementById('search-transfer-btn');
+const adventureBtn      = document.getElementById('adventure-btn');
+const backHomeBtn       = document.getElementById('back-home-btn');
+const searchInput       = document.getElementById('search-input');
+const searchButton      = document.getElementById('search-button');
+const searchLegend      = document.getElementById('search-legend');
+const searchResult      = document.getElementById('search-result');
+const mainTitle         = document.getElementById('main-title');
 
-// ================= INITIALIZE =================
+// ================ INITIALIZE ================
 window.addEventListener('DOMContentLoaded', async () => {
   try {
     const [tResp, tmResp] = await Promise.all([
@@ -39,13 +39,13 @@ window.addEventListener('DOMContentLoaded', async () => {
     tomorrowsRecords = tmData.template.content || [];
 
     if (todaysRecords.length === 0 && tomorrowsRecords.length === 0) {
-      // SHOW MEMORY GAME
+      // Show memory game
       homeContainer.style.display   = 'none';
       searchContainer.style.display = 'none';
-      memoryContainer.style.display = 'block';
+      memoryContainer.style.display = 'flex';
       initMemoryGame();
     } else {
-      // SHOW TRANSFERS UI
+      // Show transfers UI
       memoryContainer.style.display = 'none';
       homeContainer.style.display   = 'block';
       initTransfers();
@@ -55,13 +55,14 @@ window.addEventListener('DOMContentLoaded', async () => {
   }
 });
 
-// ================= MEMORY GAME =================
+// ============== MEMORY GAME ==============
 function initMemoryGame() {
+  memoryMsg.textContent = '';
   const emojis = ['🏖️','🌊','🌞','🏝️','🐚','🦀','🌴','🐠'];
   let deck = [...emojis, ...emojis];
   shuffle(deck);
   memoryBoard.innerHTML = '';
-  let first = null, second = null, lock = false, matched = 0;
+  let first=null, second=null, lock=false, matched=0;
 
   deck.forEach(emoji => {
     const card = document.createElement('div');
@@ -100,11 +101,12 @@ function initMemoryGame() {
 }
 
 function resetTurn() {
-  [first, second, lock] = [null, null, false];
+  first = null; second = null; lock = false;
 }
 
 function endMemoryGame() {
-  memoryMsg.textContent = '¡Buen trabajo! Disfruta tu estancia.';
+  memoryMsg.innerHTML = '<span class="up-arrow">⬆️</span><br>Thanks — enjoy the best activities here';
+  startMemoryBtn.textContent = 'Volver a jugar';
   startMemoryBtn.style.display = 'inline-block';
 }
 
@@ -115,15 +117,13 @@ function shuffle(array) {
   }
 }
 
-// ================= TRANSFERS UI =================
+// ============= TRANSFERS UI =============
 function initTransfers() {
-  // initial render
   currentDataset = 'today';
   totalPages     = Math.ceil(todaysRecords.length / itemsPerPage);
   updateTitle();
   renderTable();
 
-  // setup navigation & search
   searchTransferBtn.addEventListener('click', goToSearch);
   adventureBtn.addEventListener('click', () => alert('Implement your adventure logic'));
   backHomeBtn.addEventListener('click', goToHome);
@@ -131,16 +131,14 @@ function initTransfers() {
 }
 
 function updateTitle() {
-  mainTitle.innerText = (currentDataset === 'today')
+  mainTitle.innerText = currentDataset === 'today'
     ? "Today’s pick-up airport transfers"
     : "Tomorrow’s pick-up airport transfers";
 }
 
 function renderTable() {
   clearInterval(autoPageInterval);
-  let records = currentDataset === 'today'
-    ? todaysRecords
-    : tomorrowsRecords;
+  const records = currentDataset === 'today' ? todaysRecords : tomorrowsRecords;
   totalPages = Math.ceil(records.length / itemsPerPage);
   const startIdx = (currentPage - 1) * itemsPerPage;
   const pageRec  = records.slice(startIdx, startIdx + itemsPerPage);
@@ -148,14 +146,10 @@ function renderTable() {
   let html = `<table>
     <thead>
       <tr><th>Booking No.</th><th>Flight No.</th><th>Hotel</th><th>Pick-Up time</th></tr>
-    </thead>
-    <tbody>`;
+    </thead><tbody>`;
   pageRec.forEach(i => {
     html += `<tr>
-      <td>${i.id}</td>
-      <td>${i.Flight}</td>
-      <td>${i.HotelName}</td>
-      <td>${i.Time}</td>
+      <td>${i.id}</td><td>${i.Flight}</td><td>${i.HotelName}</td><td>${i.Time}</td>
     </tr>`;
   });
   html += `</tbody></table>`;
@@ -195,7 +189,7 @@ function handleSearch() {
   clearTimeout(inactivityTimer);
   searchLegend.style.display = 'none';
   const q = searchInput.value.trim().toLowerCase();
-  if (!q) { return goToHome(); }
+  if (!q) { goToHome(); return; }
   let rec = todaysRecords.find(i => i.id.toLowerCase() === q)
          || tomorrowsRecords.find(i => i.id.toLowerCase() === q);
   inactivityTimer = setTimeout(goToHome, 20000);
@@ -203,15 +197,12 @@ function handleSearch() {
     searchResult.innerHTML = `
       <p><strong>We got you, here is your transfer</strong></p>
       <table class="transfer-result-table">
-        <thead>
-          <tr><th>Booking No.</th><th>Flight No.</th><th>Hotel</th><th>Pick-Up time</th></tr>
-        </thead>
+        <thead><tr>
+          <th>Booking No.</th><th>Flight No.</th><th>Hotel</th><th>Pick-Up time</th>
+        </tr></thead>
         <tbody>
           <tr>
-            <td>${rec.id}</td>
-            <td>${rec.Flight}</td>
-            <td>${rec.HotelName}</td>
-            <td>${rec.Time}</td>
+            <td>${rec.id}</td><td>${rec.Flight}</td><td>${rec.HotelName}</td><td>${rec.Time}</td>
           </tr>
         </tbody>
       </table>`;
