@@ -32,31 +32,33 @@ const searchLegend      = document.getElementById('search-legend');
 const searchResult      = document.getElementById('search-result');
 const mainTitle         = document.getElementById('main-title');
 
-// ← AQUI: usa tus URLs raw.githubusercontent.com
+// ← AQUI: reemplaza con tus URLs raw.githubusercontent.com
 const images = [
-  'https://raw.githubusercontent.com/tu_usuario/tu_repo/main/images/beach.png',
-  'https://raw.githubusercontent.com/tu_usuario/tu_repo/main/images/crab.png',
-  'https://raw.githubusercontent.com/tu_usuario/tu_repo/main/images/palm.png',
-  'https://raw.githubusercontent.com/tu_usuario/tu_repo/main/images/sun.png',
-  'https://raw.githubusercontent.com/tu_usuario/tu_repo/main/images/wave.png',
-  'https://raw.githubusercontent.com/tu_usuario/tu_repo/main/images/shell.png',
-  'https://raw.githubusercontent.com/tu_usuario/tu_repo/main/images/umbrella.png',
-  'https://raw.githubusercontent.com/tu_usuario/tu_repo/main/images/fish.png'
+  'https://raw.githubusercontent.com/tu_usuario/tu_repo/main/assets/image1.png',
+  'https://raw.githubusercontent.com/tu_usuario/tu_repo/main/assets/image2.png',
+  'https://raw.githubusercontent.com/tu_usuario/tu_repo/main/assets/image3.png',
+  'https://raw.githubusercontent.com/tu_usuario/tu_repo/main/assets/image4.png',
+  'https://raw.githubusercontent.com/tu_usuario/tu_repo/main/assets/image5.png',
+  'https://raw.githubusercontent.com/tu_usuario/tu_repo/main/assets/image6.png',
+  'https://raw.githubusercontent.com/tu_usuario/tu_repo/main/assets/image7.png',
+  'https://raw.githubusercontent.com/tu_usuario/tu_repo/main/assets/image8.png'
 ];
 
 // ================ INITIALIZE ================
 window.addEventListener('DOMContentLoaded', async () => {
   try {
-    const [tResp, tmResp] = await Promise.all([
+    const [todayResp, tomorrowResp] = await Promise.all([
       fetch('data.json'),
       fetch('data_2.json')
     ]);
-    const tData  = await tResp.json();
-    const tmData = await tmResp.json();
-    todaysRecords    = tData.template.content || [];
-    tomorrowsRecords = tmData.template.content || [];
+    const todayData    = await todayResp.json();
+    const tomorrowData = await tomorrowResp.json();
+
+    todaysRecords    = todayData.template.content || [];
+    tomorrowsRecords = tomorrowData.template.content || [];
 
     if (todaysRecords.length === 0 && tomorrowsRecords.length === 0) {
+      // Ambos vacíos → memorama
       homeContainer.style.display   = 'none';
       searchContainer.style.display = 'none';
       memoryContainer.style.display = 'flex';
@@ -64,12 +66,21 @@ window.addEventListener('DOMContentLoaded', async () => {
       memoryBoard.style.display     = 'none';
       startMemoryBtn.onclick        = initMemoryGame;
     } else {
+      // Hay datos en hoy o mañana → transfers
       memoryContainer.style.display = 'none';
       homeContainer.style.display   = 'block';
+
+      // Si hoy está vacío pero mañana tiene, arrancamos con tomorrow
+      if (todaysRecords.length > 0) {
+        currentDataset = 'today';
+      } else {
+        currentDataset = 'tomorrow';
+      }
+      currentPage = 1;
       initTransfers();
     }
   } catch (err) {
-    console.error(err);
+    console.error('Error al cargar datos:', err);
   }
 });
 
@@ -89,14 +100,14 @@ function initMemoryGame() {
     card.className = 'card';
     card.dataset.url = url;
     card.innerHTML = `
-  <div class="face">
-    <img src="https://miguelgrhub.github.io/Dysp_Mystique_Holbox/Mystique_memorama.png" alt="Card Back"/>
-  </div>
-  <div class="back">
-    <img src="${url}" alt="Card Front"/>
-  </div>
-`;
-
+      <div class="face">
+        <img src="https://raw.githubusercontent.com/tu_usuario/tu_repo/main/assets/card-back.png"
+             alt="Card Back"/>
+      </div>
+      <div class="back">
+        <img src="${url}" alt="Card Front"/>
+      </div>
+    `;
     card.onclick = () => {
       if (memLock || card === memFirst || card.classList.contains('matched')) return;
       card.classList.add('flipped');
@@ -153,8 +164,10 @@ function shuffle(array) {
 
 // ============= TRANSFERS UI =============
 function initTransfers() {
-  currentDataset = 'today';
-  totalPages     = Math.ceil(todaysRecords.length / itemsPerPage);
+  totalPages = Math.ceil(
+    (currentDataset === 'today' ? todaysRecords : tomorrowsRecords).length
+    / itemsPerPage
+  );
   updateTitle();
   renderTable();
 
