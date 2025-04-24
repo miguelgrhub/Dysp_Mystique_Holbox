@@ -45,11 +45,14 @@ window.addEventListener('DOMContentLoaded', async () => {
     tomorrowsRecords = tmData.template.content || [];
 
     if (todaysRecords.length === 0 && tomorrowsRecords.length === 0) {
+      // show memorama UI
       homeContainer.style.display   = 'none';
       searchContainer.style.display = 'none';
       memoryContainer.style.display = 'flex';
-      initMemoryGame();
-      startMemoryBtn.addEventListener('click', initMemoryGame);
+      // only show start button initially
+      startMemoryBtn.style.display  = 'inline-block';
+      memoryBoard.style.display     = 'none';
+      startMemoryBtn.onclick        = initMemoryGame;
     } else {
       memoryContainer.style.display = 'none';
       homeContainer.style.display   = 'block';
@@ -62,25 +65,25 @@ window.addEventListener('DOMContentLoaded', async () => {
 
 // ============== MEMORY GAME ==============
 function initMemoryGame() {
+  // reset
   memFirst = memSecond = null;
   memLock = false;
   memMatched = 0;
   memoryMsg.textContent = '';
-  startMemoryBtn.style.display = 'none';
-  memoryBoard.style.display = 'grid';
 
+  // prepare board
   const emojis = ['🏖️','🌊','🌞','🏝️','🐚','🦀','🌴','🐠'];
   let deck = [...emojis, ...emojis];
   shuffle(deck);
-  memoryBoard.innerHTML = '';
 
+  memoryBoard.innerHTML = '';
   deck.forEach(emoji => {
     const card = document.createElement('div');
     card.className = 'card';
     card.dataset.emoji = emoji;
-    card.innerHTML = `<div class="face"></div><div class="back"></div>`;
+    card.innerHTML = '<div class="face"></div><div class="back"></div>';
     card.querySelector('.back').textContent = emoji;
-    card.addEventListener('click', () => {
+    card.onclick = () => {
       if (memLock || card === memFirst || card.classList.contains('matched')) return;
       card.classList.add('flipped');
       if (!memFirst) {
@@ -110,14 +113,18 @@ function initMemoryGame() {
           }, 800);
         }
       }
-    });
+    };
     memoryBoard.appendChild(card);
   });
+
+  // show board, hide button
+  startMemoryBtn.style.display = 'none';
+  memoryBoard.style.display    = 'grid';
 }
 
 function endMemoryGame() {
   memoryMsg.innerHTML = '<span class="up-arrow">⬆️</span><br>Thanks — enjoy the best activities here';
-  startMemoryBtn.textContent = 'Volver a jugar';
+  startMemoryBtn.textContent  = 'Volver a jugar';
   startMemoryBtn.style.display = 'inline-block';
 }
 
@@ -135,10 +142,10 @@ function initTransfers() {
   updateTitle();
   renderTable();
 
-  searchTransferBtn.addEventListener('click', goToSearch);
-  adventureBtn.addEventListener('click', () => alert('Implement your adventure logic'));
-  backHomeBtn.addEventListener('click', goToHome);
-  searchButton.addEventListener('click', handleSearch);
+  searchTransferBtn.onclick = goToSearch;
+  adventureBtn.onclick      = () => alert('Implement your adventure logic');
+  backHomeBtn.onclick       = goToHome;
+  searchButton.onclick      = handleSearch;
 }
 
 function updateTitle() {
