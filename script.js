@@ -93,7 +93,7 @@ function initMemoryGame() {
     <img src="https://miguelgrhub.github.io/Dysp_Mystique_Holbox/NEXUS_MEMORAMA.jpeg" alt="Card Back"/>
   </div>
   <div class="back">
-    <img src="https://miguelgrhub.github.io/Dysp_Mystique_Holbox/NEXUS_MEMORAMA.jpeg" alt="Card Front"/>
+    <img src="${url}" alt="Card Front"/>
   </div>
 `;
 
