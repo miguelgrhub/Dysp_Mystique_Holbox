@@ -40,23 +40,30 @@ body {
   transform-style: preserve-3d;
   transition: transform 0.4s;
   cursor: pointer;
+  border: 2px solid #F17121;
+  border-radius: 8px;
 }
 .card.flipped { transform: rotateY(180deg); }
+.card.correct { animation: flash-green-border 0.5s; }
+.card.wrong   { animation: flash-red-border   0.5s; }
+@keyframes flash-red-border {
+  from { border-color: #f00; }
+  to   { border-color: #F17121; }
+}
+@keyframes flash-green-border {
+  from { border-color: #0f0; }
+  to   { border-color: #F17121; }
+}
 .card .face, .card .back {
   position: absolute;
   width: 100%; height: 100%;
   backface-visibility: hidden;
-  border: 2px solid #F17121;
-  border-radius: 8px;
   display: flex; align-items: center; justify-content: center;
   font-size: 2rem;
   background: #fff;
 }
 .card .back { transform: rotateY(180deg); }
-.card.wrong { animation: flash-red 0.5s; }
-.card.correct { animation: flash-green 0.5s; }
-@keyframes flash-red   { from { background: #f88; }   to { background: #fff; } }
-@keyframes flash-green { from { background: #8f8; }   to { background: #fff; } }
+
 .message {
   margin-top: 10px;
   font-size: 1rem;
