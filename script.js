@@ -32,6 +32,18 @@ const searchLegend      = document.getElementById('search-legend');
 const searchResult      = document.getElementById('search-result');
 const mainTitle         = document.getElementById('main-title');
 
+// ← AQUI: usa tus URLs raw.githubusercontent.com
+const images = [
+  'https://raw.githubusercontent.com/tu_usuario/tu_repo/main/images/beach.png',
+  'https://raw.githubusercontent.com/tu_usuario/tu_repo/main/images/crab.png',
+  'https://raw.githubusercontent.com/tu_usuario/tu_repo/main/images/palm.png',
+  'https://raw.githubusercontent.com/tu_usuario/tu_repo/main/images/sun.png',
+  'https://raw.githubusercontent.com/tu_usuario/tu_repo/main/images/wave.png',
+  'https://raw.githubusercontent.com/tu_usuario/tu_repo/main/images/shell.png',
+  'https://raw.githubusercontent.com/tu_usuario/tu_repo/main/images/umbrella.png',
+  'https://raw.githubusercontent.com/tu_usuario/tu_repo/main/images/fish.png'
+];
+
 // ================ INITIALIZE ================
 window.addEventListener('DOMContentLoaded', async () => {
   try {
@@ -68,18 +80,18 @@ function initMemoryGame() {
   memMatched = 0;
   memoryMsg.textContent = '';
 
-  // build deck
-  const emojis = ['🏖️','🌊','🌞','🏝️','🐚','🦀','🌴','🐠'];
-  let deck = [...emojis, ...emojis];
+  let deck = [...images, ...images];
   shuffle(deck);
 
   memoryBoard.innerHTML = '';
-  deck.forEach(emoji => {
+  deck.forEach(url => {
     const card = document.createElement('div');
     card.className = 'card';
-    card.dataset.emoji = emoji;
-    card.innerHTML = '<div class="face"></div><div class="back"></div>';
-    card.querySelector('.back').textContent = emoji;
+    card.dataset.url = url;
+    card.innerHTML = `
+      <div class="face">❓</div>
+      <div class="back"><img src="${url}" alt=""/></div>
+    `;
     card.onclick = () => {
       if (memLock || card === memFirst || card.classList.contains('matched')) return;
       card.classList.add('flipped');
@@ -88,7 +100,7 @@ function initMemoryGame() {
       } else {
         memSecond = card;
         memLock = true;
-        if (memFirst.dataset.emoji === memSecond.dataset.emoji) {
+        if (memFirst.dataset.url === memSecond.dataset.url) {
           memFirst.classList.add('correct','matched');
           memSecond.classList.add('correct','matched');
           setTimeout(() => {
