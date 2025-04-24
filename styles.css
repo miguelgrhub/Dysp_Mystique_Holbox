@@ -177,3 +177,9 @@ body {
 .logos_footer {
   justify-content: center; display: flex;
 }
+.card .face img,
+.card .back img {
+  max-width: 70px;
+  max-height: 70px;
+}
+
