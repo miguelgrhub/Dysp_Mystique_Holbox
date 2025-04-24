@@ -11,8 +11,12 @@ body {
 /* MEMORY GAME */
 #memory-container {
   display: none;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   text-align: center;
-  margin-bottom: 30px;
 }
 .play-button {
   padding: 10px 20px;
@@ -28,11 +32,9 @@ body {
   display: grid;
   grid-template-columns: repeat(4, 80px);
   grid-gap: 10px;
-  justify-content: center;
 }
 .card {
-  width: 80px;
-  height: 80px;
+  width: 80px; height: 80px;
   background: #fff;
   border: 2px solid #F17121;
   border-radius: 8px;
@@ -49,6 +51,10 @@ body {
   margin-top: 10px;
   font-size: 1rem;
   color: #F17121;
+}
+.up-arrow {
+  font-size: 2rem;
+  margin-bottom: 8px;
 }
 
 /* HOME & TABLE */
@@ -96,23 +102,16 @@ body {
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 .table-container table {
-  width: 100%;
-  border-collapse: collapse;
+  width: 100%; border-collapse: collapse;
 }
 .table-container th, .table-container td {
-  padding: 12px;
-  text-align: left;
-  border-bottom: 1px solid #ccc;
+  padding: 12px; text-align: left; border-bottom: 1px solid #ccc;
 }
 .table-container th {
-  background: #f9f9f9;
-  color: #F17121;
-  font-weight: bold;
+  background: #f9f9f9; color: #F17121; font-weight: bold;
 }
 .auto-page-info {
-  text-align: center;
-  color: #666;
-  font-size: 0.85rem;
+  text-align: center; color: #666; font-size: 0.85rem;
 }
 
 /* SEARCH */
@@ -124,73 +123,46 @@ body {
   text-align: center;
 }
 .btn-back {
-  position: absolute;
-  top: 0; left: 0;
+  position: absolute; top: 0; left: 0;
   transform: translateY(-50%);
-  background: none;
-  border: 2px solid #F17121;
-  color: #F17121;
-  padding: 5px 10px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.9rem;
+  background: none; border: 2px solid #F17121;
+  color: #F17121; padding: 5px 10px;
+  border-radius: 4px; cursor: pointer; font-size: 0.9rem;
 }
 .search-box {
-  display: inline-flex;
-  gap: 10px;
-  margin-bottom: 10px;
+  display: inline-flex; gap: 10px; margin-bottom: 10px;
 }
 .search-box input {
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  width: 220px;
-  font-size: 0.9rem;
+  padding: 10px; border: 1px solid #ccc; border-radius: 4px;
+  width: 220px; font-size: 0.9rem;
 }
 .btn-search {
-  background: #F17121;
-  color: #fff;
-  border: none;
-  padding: 10px 14px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.9rem;
+  background: #F17121; color: #fff; border: none;
+  padding: 10px 14px; border-radius: 4px;
+  cursor: pointer; font-size: 0.9rem;
 }
 .search-legend {
-  font-size: 0.9rem;
-  color: #666;
-  text-align: center;
-  max-width: 500px;
-  margin: 10px auto;
-  line-height: 1.4;
+  font-size: 0.9rem; color: #666; text-align: center;
+  max-width: 500px; margin: 10px auto; line-height: 1.4;
 }
 .search-result {
-  margin-top: 20px;
-  min-height: 50px;
+  margin-top: 20px; min-height: 50px; text-align: center;
 }
-.error-text {
-  color: #000;
-}
+.error-text { color: #000; }
 .transfer-result-table th, .transfer-result-table td {
-  padding: 12px;
-  border-bottom: 1px solid #ccc;
+  padding: 12px; border-bottom: 1px solid #ccc;
 }
 .transfer-result-table th {
-  background: #f9f9f9;
-  color: #F17121;
+  background: #f9f9f9; color: #F17121;
 }
 .icon { font-size: 1.6rem; }
 .hide { display: none!important; }
 .qr-container {
-  text-align: center;
-  margin-top: 20px;
+  text-align: center; margin-top: 20px;
 }
 .qr-container img {
-  max-width: 400px;
-  width: 100%;
-  height: auto;
+  max-width: 400px; width: 100%; height: auto;
 }
 .logo_nexus_bdr {
-  width: 90%;
-  max-width: 944px;
+  width: 90%; max-width: 944px;
 }
