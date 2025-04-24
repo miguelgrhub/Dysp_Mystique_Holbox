@@ -8,7 +8,7 @@ let totalPages       = 1;
 let autoPageInterval = null;
 let inactivityTimer  = null;
 
-// MEMORIA state (fuera de init para no perder referencias)
+// MEMORIA state
 let memFirst   = null;
 let memSecond  = null;
 let memLock    = false;
@@ -45,14 +45,12 @@ window.addEventListener('DOMContentLoaded', async () => {
     tomorrowsRecords = tmData.template.content || [];
 
     if (todaysRecords.length === 0 && tomorrowsRecords.length === 0) {
-      // Show memory game
       homeContainer.style.display   = 'none';
       searchContainer.style.display = 'none';
       memoryContainer.style.display = 'flex';
       initMemoryGame();
       startMemoryBtn.addEventListener('click', initMemoryGame);
     } else {
-      // Show transfers UI
       memoryContainer.style.display = 'none';
       homeContainer.style.display   = 'block';
       initTransfers();
@@ -64,28 +62,26 @@ window.addEventListener('DOMContentLoaded', async () => {
 
 // ============== MEMORY GAME ==============
 function initMemoryGame() {
-  // Reset state
-  memFirst   = null;
-  memSecond  = null;
-  memLock    = false;
+  memFirst = memSecond = null;
+  memLock = false;
   memMatched = 0;
   memoryMsg.textContent = '';
   startMemoryBtn.style.display = 'none';
+  memoryBoard.style.display = 'grid';
 
-  // Prepare deck
   const emojis = ['🏖️','🌊','🌞','🏝️','🐚','🦀','🌴','🐠'];
   let deck = [...emojis, ...emojis];
   shuffle(deck);
-
-  // Render board
   memoryBoard.innerHTML = '';
+
   deck.forEach(emoji => {
     const card = document.createElement('div');
     card.className = 'card';
     card.dataset.emoji = emoji;
+    card.innerHTML = `<div class="face"></div><div class="back"></div>`;
+    card.querySelector('.back').textContent = emoji;
     card.addEventListener('click', () => {
       if (memLock || card === memFirst || card.classList.contains('matched')) return;
-      card.textContent = emoji;
       card.classList.add('flipped');
       if (!memFirst) {
         memFirst = card;
@@ -93,22 +89,25 @@ function initMemoryGame() {
         memSecond = card;
         memLock = true;
         if (memFirst.dataset.emoji === memSecond.dataset.emoji) {
-          memFirst.classList.add('matched');
-          memSecond.classList.add('matched');
-          memMatched += 2;
-          // allow next picks immediately
-          memFirst = memSecond = null;
-          memLock = false;
-          if (memMatched === deck.length) endMemoryGame();
-        } else {
+          memFirst.classList.add('correct','matched');
+          memSecond.classList.add('correct','matched');
           setTimeout(() => {
-            memFirst.textContent = '';
-            memSecond.textContent = '';
-            memFirst.classList.remove('flipped');
-            memSecond.classList.remove('flipped');
+            memFirst.classList.remove('correct');
+            memSecond.classList.remove('correct');
             memFirst = memSecond = null;
             memLock = false;
-          }, 1000);
+          }, 500);
+          memMatched += 2;
+          if (memMatched === deck.length) endMemoryGame();
+        } else {
+          memFirst.classList.add('wrong');
+          memSecond.classList.add('wrong');
+          setTimeout(() => {
+            memFirst.classList.remove('wrong','flipped');
+            memSecond.classList.remove('wrong','flipped');
+            memFirst = memSecond = null;
+            memLock = false;
+          }, 800);
         }
       }
     });
