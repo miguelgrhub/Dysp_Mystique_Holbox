@@ -34,14 +34,14 @@ const mainTitle         = document.getElementById('main-title');
 
 // ← AQUI: reemplaza con tus URLs raw.githubusercontent.com
 const images = [
-  'https://miguelgrhub.github.io/Dysp_Mystique_Holbox/image1.png',
-  'https://miguelgrhub.github.io/Dysp_Mystique_Holbox/image2.png',
-  'https://miguelgrhub.github.io/Dysp_Mystique_Holbox/image3.png',
-  'https://miguelgrhub.github.io/Dysp_Mystique_Holbox/image4.png',
-  'https://miguelgrhub.github.io/Dysp_Mystique_Holbox/image5.png',
-  'https://miguelgrhub.github.io/Dysp_Mystique_Holbox/image6.png',
-  'https://miguelgrhub.github.io/Dysp_Mystique_Holbox/image7.png',
-  'https://miguelgrhub.github.io/Dysp_Mystique_Holbox/image8.png'
+  'https://miguelgrhub.github.io/Dysp_Mystique_Holbox/best%20holbox%203.png',
+  'https://miguelgrhub.github.io/Dysp_Mystique_Holbox/best%20holbox%206.png',
+  'https://miguelgrhub.github.io/Dysp_Mystique_Holbox/bioluminiscencia%20%205.png',
+  'https://miguelgrhub.github.io/Dysp_Mystique_Holbox/classic%203.png',
+  'https://miguelgrhub.github.io/Dysp_Mystique_Holbox/kayak%205.png',
+  'https://miguelgrhub.github.io/Dysp_Mystique_Holbox/kayak%204.png',
+  'https://miguelgrhub.github.io/Dysp_Mystique_Holbox/chichen%205.jpg',
+  'https://miguelgrhub.github.io/Dysp_Mystique_Holbox/classic%201.png'
 ];
 
 // ================ INITIALIZE ================
