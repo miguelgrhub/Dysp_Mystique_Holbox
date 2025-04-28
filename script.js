@@ -152,7 +152,7 @@ function handleCardClick(card, deckSize) {
 
 function endMemoryGame() {
   memoryMsg.innerHTML = '<span class="up-arrow">⬆️</span><br>Thanks — enjoy the best activities here';
-  startMemoryBtn.textContent  = 'Volver a jugar';
+  startMemoryBtn.textContent  = 'Play Again';
   startMemoryBtn.style.display = 'inline-block';
 }
 
