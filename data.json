@@ -1,7 +1,14 @@
 {
   "template": {
     "type": "JSON",
-    "content": [],
+    "content": [
+      {
+        "id": "N2TSS6",
+        "Flight": "AS1403",
+        "Time": "16:11",
+        "HotelName": "Mystique Holbox by Royalton"
+      }
+    ],
     "source": {
       "data_source": "Google Sheets (Private)",
       "update_frequency": "Automated"
