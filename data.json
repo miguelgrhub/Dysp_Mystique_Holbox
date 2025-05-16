@@ -1,12 +1,12 @@
 {
-  "template": {
+  "templates": {
     "type": "JSON",
     "content": [
       {
-        "id": "4124743",
-        "Flight": "DL641",
-        "Time": "12:35",
-        "HotelName": "Mystique Holbox by Royalton"
+        "id": "78029973",
+        "Flight": "TBA000",
+        "Time": "15:00",
+        "HotelName": "CONTACT YOUR ROYALTON EXPERIENCE REP"
       }
     ],
     "source": {
