@@ -1,7 +1,26 @@
 {
-  "template": {
+  "templates": {
     "type": "JSON",
-    "content": [],
+    "content": [
+      {
+        "id": "93751229",
+        "Flight": "TBA000",
+        "Time": "15:00",
+        "HotelName": "CONTACT YOUR ROYALTON EXPERIENCE REP"
+      },
+      {
+        "id": "9893SF057221",
+        "Flight": "TBA000",
+        "Time": "15:00",
+        "HotelName": "CONTACT YOUR ROYALTON EXPERIENCE REP"
+      },
+      {
+        "id": "92253211",
+        "Flight": "TBA000",
+        "Time": "15:00",
+        "HotelName": "CONTACT YOUR ROYALTON EXPERIENCE REP"
+      }
+    ],
     "source": {
       "data_source": "Google Sheets (Private)",
       "update_frequency": "Automated"
