@@ -1,272 +1,80 @@
-// ================= GLOBALS =================
-let todaysRecords    = [];
-let tomorrowsRecords = [];
-let currentDataset   = "today";
-let currentPage      = 1;
-const itemsPerPage   = 15;
-let totalPages       = 1;
-let autoPageInterval = null;
-let inactivityTimer  = null;
+// ==================== Variables globales ====================
+let todaysRecords = [];        // Registros de today (data.json)
+let tomorrowsRecords = [];     // Registros de tomorrow (data_2.json)
+let currentDataset = "today";  // "today" o "tomorrow"
+let currentRecords = [];       // Conjunto de registros actual
+let currentPage = 1;           // Página actual
+const itemsPerPage = 15;       // Registros por "página"
+let totalPages = 1;            // Se calculará al cargar
+let autoPageInterval = null;   // Intervalo para auto-cambiar página cada 10s
+let inactivityTimer = null;    // Temporizador de inactividad en la pantalla de búsqueda
 
-// MEMORIA state
-let memFirst   = null;
-let memSecond  = null;
-let memLock    = false;
-let memMatched = 0;
+// Referencias a elementos del DOM
+const homeContainer      = document.getElementById('home-container');
+const searchContainer    = document.getElementById('search-container');
+const tableContainer     = document.getElementById('table-container');
+const searchTransferBtn  = document.getElementById('search-transfer-btn');
+const adventureBtn       = document.getElementById('adventure-btn');
+const backHomeBtn        = document.getElementById('back-home-btn');
+const searchInput        = document.getElementById('search-input');
+const searchButton       = document.getElementById('search-button');
+const searchResult       = document.getElementById('search-result');
+const searchLegend       = document.getElementById('search-legend');
+const mainTitle          = document.getElementById('main-title');
 
-// DOM REFS
-const memoryContainer   = document.getElementById('memory-container');
-const startMemoryBtn    = document.getElementById('start-memory');
-const memoryBoard       = document.getElementById('memory-board');
-const memoryMsg         = document.getElementById('memory-msg');
-
-const homeContainer     = document.getElementById('home-container');
-const searchContainer   = document.getElementById('search-container');
-const tableContainer    = document.getElementById('table-container');
-const searchTransferBtn = document.getElementById('search-transfer-btn');
-const adventureBtn      = document.getElementById('adventure-btn');
-const backHomeBtn       = document.getElementById('back-home-btn');
-const searchInput       = document.getElementById('search-input');
-const searchButton      = document.getElementById('search-button');
-const searchLegend      = document.getElementById('search-legend');
-const searchResult      = document.getElementById('search-result');
-const mainTitle         = document.getElementById('main-title');
-
-// ← AQUI: reemplaza con tus URLs raw.githubusercontent.com
-const images = [
-  'https://miguelgrhub.github.io/Dysp_Mystique_Holbox/best%20holbox%203.png',
-  'https://miguelgrhub.github.io/Dysp_Mystique_Holbox/best%20holbox%206.png',
-  'https://miguelgrhub.github.io/Dysp_Mystique_Holbox/bioluminiscencia%20%205.png',
-  'https://miguelgrhub.github.io/Dysp_Mystique_Holbox/classic%203.png',
-  'https://miguelgrhub.github.io/Dysp_Mystique_Holbox/kayak%205.png',
-  'https://miguelgrhub.github.io/Dysp_Mystique_Holbox/kayak%204.png',
-  'https://miguelgrhub.github.io/Dysp_Mystique_Holbox/chichen%205.jpg',
-  'https://miguelgrhub.github.io/Dysp_Mystique_Holbox/classic%201.png'
-];
-
-// ================ INITIALIZE ================
+// ==================== Cargar ambos JSON ====================
 window.addEventListener('DOMContentLoaded', async () => {
   try {
     const [todayResp, tomorrowResp] = await Promise.all([
       fetch('data.json'),
       fetch('data_2.json')
     ]);
+    if (!todayResp.ok)    throw new Error(`Fetch failed for data.json: ${todayResp.status}`);
+    if (!tomorrowResp.ok) throw new Error(`Fetch failed for data_2.json: ${tomorrowResp.status}`);
+
     const todayData    = await todayResp.json();
     const tomorrowData = await tomorrowResp.json();
 
-    todaysRecords    = todayData.template.content || [];
-    tomorrowsRecords = tomorrowData.template.content || [];
+    // *** CORRECCIÓN: usamos "templates" en lugar de "template" ***
+    todaysRecords    = todayData.templates?.content || [];
+    tomorrowsRecords = tomorrowData.templates?.content || [];
 
-    const hasToday    = todaysRecords.length > 0;
-    const hasTomorrow = tomorrowsRecords.length > 0;
+    // Inicializamos vista
+    currentDataset = "today";
+    currentRecords = todaysRecords;
+    totalPages     = Math.ceil(currentRecords.length / itemsPerPage);
 
-    if (!hasToday && !hasTomorrow) {
-      // Ambos vacíos → memorama
-      homeContainer.style.display   = 'none';
-      searchContainer.style.display = 'none';
-      memoryContainer.style.display = 'flex';
-      startMemoryBtn.style.display  = 'inline-block';
-      memoryBoard.style.display     = 'none';
-      startMemoryBtn.onclick        = initMemoryGame;
-    } else {
-      // Hay datos en uno o ambos → transfers
-      memoryContainer.style.display = 'none';
-      homeContainer.style.display   = 'block';
-      searchContainer.style.display = 'none';
-
-      // arrancar con today si tiene, si no con tomorrow
-      currentDataset = hasToday ? 'today' : 'tomorrow';
-      currentPage = 1;
-      initTransfers();
-    }
-  } catch (err) {
-    console.error('Error al cargar datos:', err);
+    updateTitle();
+    renderTable();
+  } catch (error) {
+    console.error('Error loading data:', error);
+    tableContainer.innerHTML = `<p style="color:red;text-align:center;">Error loading data.</p>`;
   }
 });
 
-// ============== MEMORY GAME ==============
-function initMemoryGame() {
-  memFirst = memSecond = null;
-  memLock = false;
-  memMatched = 0;
-  memoryMsg.textContent = '';
-
-  let deck = [...images, ...images];
-  shuffle(deck);
-
-  memoryBoard.innerHTML = '';
-  deck.forEach(url => {
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.dataset.url = url;
-    card.innerHTML = `
-      <div class="face">
-        <img src="https://miguelgrhub.github.io/Dysp_Mystique_Holbox/Mystique_memorama.png" alt="Card Back"/>
-      </div>
-      <div class="back">
-        <img src="${url}" alt="Card Front"/>
-      </div>
-    `;
-    card.onclick = () => handleCardClick(card, deck.length);
-    memoryBoard.appendChild(card);
-  });
-
-  startMemoryBtn.style.display = 'none';
-  memoryBoard.style.display    = 'grid';
-}
-
-function handleCardClick(card, deckSize) {
-  if (memLock || card === memFirst || card.classList.contains('matched')) return;
-  card.classList.add('flipped');
-  if (!memFirst) {
-    memFirst = card;
-  } else {
-    memSecond = card;
-    memLock = true;
-    if (memFirst.dataset.url === memSecond.dataset.url) {
-      memFirst.classList.add('correct','matched');
-      memSecond.classList.add('correct','matched');
-      setTimeout(() => {
-        memFirst.classList.remove('correct');
-        memSecond.classList.remove('correct');
-        memFirst = memSecond = null;
-        memLock = false;
-      }, 500);
-      memMatched += 2;
-      if (memMatched === deckSize) {
-        confetti({ particleCount: 200, spread: 60 });
-        endMemoryGame();
-      }
-    } else {
-      memFirst.classList.add('wrong');
-      memSecond.classList.add('wrong');
-      setTimeout(() => {
-        memFirst.classList.remove('wrong','flipped');
-        memSecond.classList.remove('wrong','flipped');
-        memFirst = memSecond = null;
-        memLock = false;
-      }, 800);
-    }
-  }
-}
-
-function endMemoryGame() {
-  memoryMsg.innerHTML = '<span class="up-arrow">⬆️</span><br>Thanks — enjoy the best activities here';
-  startMemoryBtn.textContent  = 'Play Again';
-  startMemoryBtn.style.display = 'inline-block';
-}
-
-function shuffle(array) {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-}
-
-// ============= TRANSFERS UI =============
-function initTransfers() {
-  updateTitle();
-  renderTable();
-  searchTransferBtn.onclick = goToSearch;
-  adventureBtn.onclick      = () => alert('Implement your adventure logic');
-  backHomeBtn.onclick       = goToHome;
-  searchButton.onclick      = handleSearch;
-}
-
+// ==================== Actualizar título según dataset ====================
 function updateTitle() {
-  mainTitle.innerText = currentDataset === 'today'
-    ? "Today’s pick-up airport transfers"
-    : "Tomorrow’s pick-up airport transfers";
+  mainTitle.innerText = currentDataset === "today"
+    ? "TODAY’S PICK-UP AIRPORT TRANSFERS"
+    : "TOMORROW’S PICK-UP AIRPORT TRANSFERS";
 }
 
+// ==================== Renderizar tabla con paginación automática ====================
 function renderTable() {
-  clearInterval(autoPageInterval);
-  // Si el dataset actual está vacío, alterna solo si el otro tiene datos
-  const currArr = currentDataset === 'today' ? todaysRecords : tomorrowsRecords;
-  if (currArr.length === 0) {
-    const altArr = currentDataset === 'today' ? tomorrowsRecords : todaysRecords;
-    if (altArr.length > 0) {
-      currentDataset = currentDataset === 'today' ? 'tomorrow' : 'today';
-    }
+  if (autoPageInterval) {
+    clearInterval(autoPageInterval);
+    autoPageInterval = null;
   }
 
-  const records = currentDataset === 'today' ? todaysRecords : tomorrowsRecords;
-  totalPages = Math.max(1, Math.ceil(records.length / itemsPerPage));
-  if (currentPage > totalPages) currentPage = 1;
+  currentRecords = currentDataset === "today" ? todaysRecords : tomorrowsRecords;
+  totalPages     = Math.ceil(currentRecords.length / itemsPerPage);
 
-  const startIdx = (currentPage - 1) * itemsPerPage;
-  const pageRec  = records.slice(startIdx, startIdx + itemsPerPage);
+  const startIndex  = (currentPage - 1) * itemsPerPage;
+  const pageRecords = currentRecords.slice(startIndex, startIndex + itemsPerPage);
 
-  let html = `<table>
-    <thead>
-      <tr>
-        <th>Booking No.</th>
-        <th>Flight No.</th>
-        <th>Hotel</th>
-        <th>Pick-Up time</th>
-      </tr>
-    </thead><tbody>`;
-  pageRec.forEach(i => {
-    html += `<tr>
-      <td>${i.id}</td>
-      <td>${i.Flight}</td>
-      <td>${i.HotelName}</td>
-      <td>${i.Time}</td>
-    </tr>`;
-  });
-  html += `</tbody></table>`;
-
-  if (records.length > itemsPerPage) {
-    html += `<div class="auto-page-info">Page ${currentPage} of ${totalPages}</div>`;
-    startAutoPagination();
-  }
-
-  tableContainer.innerHTML = html;
-}
-
-function startAutoPagination() {
-  autoPageInterval = setInterval(() => {
-    currentPage++;
-    if (currentPage > totalPages) {
-      const altArr = currentDataset === 'today' ? tomorrowsRecords : todaysRecords;
-      if (altArr.length > 0) {
-        currentDataset = currentDataset === 'today' ? 'tomorrow' : 'today';
-      }
-      currentPage = 1;
-      updateTitle();
-    }
-    renderTable();
-  }, 10000);
-}
-
-function goToSearch() {
-  homeContainer.style.display   = 'none';
-  searchContainer.style.display = 'block';
-  searchLegend.style.display    = 'block';
-}
-
-function goToHome() {
-  searchContainer.style.display = 'none';
-  homeContainer.style.display   = 'block';
-  currentPage = 1;
-  renderTable();
-}
-
-function handleSearch() {
-  clearTimeout(inactivityTimer);
-  searchLegend.style.display = 'none';
-  const q = searchInput.value.trim().toLowerCase();
-  if (!q) { goToHome(); return; }
-
-  let rec = todaysRecords.find(i => i.id.toLowerCase() === q)
-         || tomorrowsRecords.find(i => i.id.toLowerCase() === q);
-
-  inactivityTimer = setTimeout(goToHome, 20000);
-
-  if (rec) {
-    searchResult.innerHTML = `
-      <p><strong>We got you, here is your transfer</strong></p>
-      <table class="transfer-result-table">
+  let html = `
+    <div class="bktable">
+      <table>
         <thead>
           <tr>
             <th>Booking No.</th>
@@ -276,23 +84,122 @@ function handleSearch() {
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>${rec.id}</td>
-            <td>${rec.Flight}</td>
-            <td>${rec.HotelName}</td>
-            <td>${rec.Time}</td>
-          </tr>
+  `;
+  pageRecords.forEach(item => {
+    html += `
+      <tr>
+        <td>${item.id}</td>
+        <td>${item.Flight}</td>
+        <td>${item.HotelName}</td>
+        <td>${item.Time}</td>
+      </tr>
+    `;
+  });
+  html += `
         </tbody>
-      </table>`;
+      </table>
+    </div>
+  `;
+
+  if (totalPages > 1) {
+    html += `<div class="auto-page-info">Page ${currentPage} of ${totalPages}</div>`;
+    startAutoPagination();
+  }
+
+  tableContainer.innerHTML = html;
+}
+
+// ==================== Auto-paginación cada 10 segundos ====================
+function startAutoPagination() {
+  autoPageInterval = setInterval(() => {
+    currentPage++;
+    if (currentPage > totalPages) {
+      currentDataset = currentDataset === "today" ? "tomorrow" : "today";
+      updateTitle();
+      currentPage = 1;
+    }
+    renderTable();
+  }, 10000);
+}
+
+// ==================== Navegación y búsqueda ====================
+searchTransferBtn.addEventListener('click', goToSearch);
+adventureBtn.addEventListener('click', () => {
+  alert('You clicked "Find your next adventure". Implement your logic here!');
+});
+backHomeBtn.addEventListener('click', () => {
+  searchResult.style.opacity = '0';
+  goToHome();
+});
+
+function goToSearch() {
+  homeContainer.style.display   = 'none';
+  searchContainer.style.display = 'block';
+  searchResult.innerHTML        = '';
+  searchInput.value             = '';
+  searchLegend.style.display    = 'block';
+  clearInterval(autoPageInterval);
+  clearTimeout(inactivityTimer);
+}
+
+function goToHome() {
+  searchContainer.style.display = 'none';
+  homeContainer.style.display   = 'block';
+  searchResult.innerHTML        = '';
+  searchInput.value             = '';
+  clearTimeout(inactivityTimer);
+  currentPage = 1;
+  renderTable();
+}
+
+searchButton.addEventListener('click', () => {
+  clearTimeout(inactivityTimer);
+  searchLegend.style.display = 'none';
+  searchResult.style.opacity = '1';
+
+  const query = searchInput.value.trim().toLowerCase();
+  if (!query) return goToHome();
+
+  const record = todaysRecords.find(r => r.id.toLowerCase() === query)
+              || tomorrowsRecords.find(r => r.id.toLowerCase() === query);
+
+  inactivityTimer = setTimeout(goToHome, 20000);
+
+  if (record) {
+    searchResult.innerHTML = `
+      <div class="bktableqrresultados">
+        <p class="titulo_result"><strong>We got you, here is your transfer</strong></p>
+        <table class="transfer-result-table">
+          <thead>
+            <tr>
+              <th>Booking No.</th>
+              <th>Flight No.</th>
+              <th>Hotel</th>
+              <th>Pick-Up time</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>${record.id}</td>
+              <td>${record.Flight}</td>
+              <td>${record.HotelName}</td>
+              <td>${record.Time}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    `;
   } else {
     searchResult.innerHTML = `
-      <p class="error-text">
-        If you have any questions about your pickup transfer time,<br>
-        please reach out to your Royalton Excursion Rep at the hospitality desk.<br>
-        You can also chat on the NexusTours App or call +52 998 251 6559.
-      </p>
-      <div class="qr-container">
-        <img src="https://miguelgrhub.github.io/Dyspl/Qr.jpeg" alt="QR Code">
-      </div>`;
+      <div class="bktableqr">
+        <p class="error-text">
+          If you have any questions about your pickup transfer time, please reach out to your Royalton Excursion Rep at the hospitality desk. You can also contact us easily via chat on the NexusTours App or by calling +52 998 251 6559<br>
+          We're here to assist you!
+        </p>
+        <div class="qr-container">
+          <img src="https://miguelgrhub.github.io/Dyspl/Qr.jpeg" alt="QR Code">
+        </div>
+      </div>
+    `;
   }
-}
+});
