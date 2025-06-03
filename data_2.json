@@ -1,22 +1,7 @@
 {
   "templates": {
     "type": "JSON",
-    "content": [
-      {
-        "id": "82295322",
-        "Flight": "NOT CONFIRMED",
-        "PickupDate": null,
-        "PickupTime": "⚠️",
-        "HotelName": "CONTACT YOUR ROYALTON EXPERIENCE REP"
-      },
-      {
-        "id": "82297177",
-        "Flight": "NOT CONFIRMED",
-        "PickupDate": null,
-        "PickupTime": "⚠️",
-        "HotelName": "CONTACT YOUR ROYALTON EXPERIENCE REP"
-      }
-    ],
+    "content": [],
     "source": {
       "data_source": "Google Sheets (Private)",
       "update_frequency": "Automated"
