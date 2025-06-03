@@ -3,51 +3,17 @@
     "type": "JSON",
     "content": [
       {
-        "id": "75131908",
+        "id": "82295322",
         "Flight": "NOT CONFIRMED",
-        "Time": "⚠️",
+        "PickupDate": null,
+        "PickupTime": "⚠️",
         "HotelName": "CONTACT YOUR ROYALTON EXPERIENCE REP"
       },
       {
-        "id": "83140719",
+        "id": "82297177",
         "Flight": "NOT CONFIRMED",
-        "Time": "⚠️",
-        "HotelName": "CONTACT YOUR ROYALTON EXPERIENCE REP"
-      },
-      {
-        "id": "75161505",
-        "Flight": "NOT CONFIRMED",
-        "Time": "⚠️",
-        "HotelName": "CONTACT YOUR ROYALTON EXPERIENCE REP"
-      },
-      {
-        "id": "9893SF059345",
-        "Flight": "NOT CONFIRMED",
-        "Time": "⚠️",
-        "HotelName": "CONTACT YOUR ROYALTON EXPERIENCE REP"
-      },
-      {
-        "id": "75131917",
-        "Flight": "NOT CONFIRMED",
-        "Time": "⚠️",
-        "HotelName": "CONTACT YOUR ROYALTON EXPERIENCE REP"
-      },
-      {
-        "id": "75207456",
-        "Flight": "NOT CONFIRMED",
-        "Time": "⚠️",
-        "HotelName": "CONTACT YOUR ROYALTON EXPERIENCE REP"
-      },
-      {
-        "id": "91990624",
-        "Flight": "NOT CONFIRMED",
-        "Time": "⚠️",
-        "HotelName": "CONTACT YOUR ROYALTON EXPERIENCE REP"
-      },
-      {
-        "id": "75131920",
-        "Flight": "NOT CONFIRMED",
-        "Time": "⚠️",
+        "PickupDate": null,
+        "PickupTime": "⚠️",
         "HotelName": "CONTACT YOUR ROYALTON EXPERIENCE REP"
       }
     ],
