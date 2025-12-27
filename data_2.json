@@ -1,24 +1,7 @@
 {
   "templates": {
     "type": "JSON",
-    "content": [
-      {
-        "id": "2LMTLM",
-        "Flight": "AM543",
-        "PickupDate": "2025-12-27",
-        "PickupTime": "10:20",
-        "HotelName": "Mystique Holbox by Royalton",
-        "HotelNumber": 12252
-      },
-      {
-        "id": "931VL2",
-        "Flight": "DL0620",
-        "PickupDate": "2025-12-27",
-        "PickupTime": "07:50",
-        "HotelName": "Mystique Holbox by Royalton",
-        "HotelNumber": 12252
-      }
-    ],
+    "content": [],
     "source": {
       "data_source": "Google Sheets (Private)",
       "update_frequency": "Automated"
